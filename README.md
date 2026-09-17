@@ -12,6 +12,10 @@ Provenance/
 └── backend/     # Express + TypeScript + Prisma (optional indexer / metadata API)
 ```
 
+## Deployed contract
+
+**Base Sepolia:** [`0x6Dba6ab5d89E854045F05C736bA52FD0Bf0AAF4b`](https://sepolia.basescan.org/address/0x6Dba6ab5d89E854045F05C736bA52FD0Bf0AAF4b) — full details in [`DEPLOYMENTS.md`](DEPLOYMENTS.md).
+
 ## Team
 
 | Person | Owns |
