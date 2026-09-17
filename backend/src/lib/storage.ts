@@ -1,4 +1,5 @@
 // Receipt storage. Primary: IPFS via Pinata (set PINATA_JWT). Fallback: local disk under backend/uploads/.
+// Uses Node 18+ global fetch/FormData/Blob; tsconfig includes the DOM lib so their types resolve on any host.
 // Either way the on-chain commitment is keccak256(bytes) — the storage layer only decides where the bytes live.
 import path from 'node:path';
 import fs from 'node:fs/promises';
@@ -23,7 +24,7 @@ export const isIpfsEnabled = () => !!env.PINATA_JWT;
 
 async function pinToIpfs(bytes: Buffer, filename: string, mimetype: string, meta: Record<string, string>): Promise<StoredReceipt> {
   const form = new FormData();
-  form.append('file', new Blob([bytes], { type: mimetype }), filename);
+  form.append('file', new Blob([new Uint8Array(bytes)], { type: mimetype }), filename);
   form.append('pinataMetadata', JSON.stringify({ name: filename, keyvalues: meta }));
   form.append('pinataOptions', JSON.stringify({ cidVersion: 1 }));
 
