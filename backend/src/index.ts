@@ -4,6 +4,7 @@ import { env } from './env.js';
 import { healthRouter } from './routes/health.js';
 import { statsRouter, donorsRouter } from './routes/stats.js';
 import { orgsRouter } from './routes/orgs.js';
+import { receiptsRouter } from './routes/receipts.js';
 import { startIndexer, stopIndexer } from './services/indexer.js';
 import { prisma } from './lib/prisma.js';
 
@@ -15,6 +16,7 @@ app.use('/api/health', healthRouter);
 app.use('/api/stats', statsRouter);
 app.use('/api/donors', donorsRouter);
 app.use('/api/orgs', orgsRouter);
+app.use('/api', receiptsRouter);
 
 app.use((_req, res) => res.status(404).json({ error: 'Not found' }));
 

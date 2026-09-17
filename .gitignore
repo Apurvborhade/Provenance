@@ -16,3 +16,4 @@ backend/prisma/*.db-journal
 .DS_Store
 *.log
 *.tsbuildinfo
+backend/uploads/

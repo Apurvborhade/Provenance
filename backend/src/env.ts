@@ -3,6 +3,8 @@ import { z } from 'zod';
 
 const schema = z.object({
   PORT: z.coerce.number().default(4000),
+  /** Base URL clients use to reach this server — embedded in on-chain receipt URIs. */
+  PUBLIC_URL: z.string().url().optional(),
   DATABASE_URL: z.string().default('file:./dev.db'),
   RPC_URL: z.string().url().default('https://sepolia.base.org'),
   CONTRACT_ADDRESS: z
@@ -17,6 +19,7 @@ const schema = z.object({
     .transform((v) => v === 'true'),
 });
 
-export const env = schema.parse(process.env);
+const parsed = schema.parse(process.env);
+export const env = { ...parsed, PUBLIC_URL: parsed.PUBLIC_URL ?? `http://localhost:${parsed.PORT}` };
 export const CONTRACT_ADDRESS = env.CONTRACT_ADDRESS as `0x${string}`;
 export const CONTRACT_CONFIGURED = CONTRACT_ADDRESS !== '0x0000000000000000000000000000000000000000';
