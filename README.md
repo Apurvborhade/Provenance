@@ -14,7 +14,7 @@ Provenance/
 
 ## Deployed contract
 
-**Base Sepolia:** [`0x29df57C50BD4A3d4CCa3be83Bc376BDDf7353192`](https://sepolia.basescan.org/address/0x29df57C50BD4A3d4CCa3be83Bc376BDDf7353192) (verified) — full details in [`DEPLOYMENTS.md`](DEPLOYMENTS.md).
+**Base Sepolia:** [`0xd38Fa0f8932025b5a8F996b5DE76e0a8480D5280`](https://sepolia.basescan.org/address/0xd38Fa0f8932025b5a8F996b5DE76e0a8480D5280) (verified) — full details in [`DEPLOYMENTS.md`](DEPLOYMENTS.md).
 
 ## Team
 
