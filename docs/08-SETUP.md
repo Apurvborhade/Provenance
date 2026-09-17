@@ -15,10 +15,16 @@
 
 ```bash
 cd contracts
-forge install foundry-rs/forge-std --no-commit   # only once
-cp .env.example .env                              # fill PRIVATE_KEY, BASESCAN_API_KEY
+cp .env.example .env        # fill BASESCAN_API_KEY (+ RPC URL if not using the public one)
 forge build
 forge test -vvv
+```
+
+Import the deployer key once into an encrypted Foundry keystore (never put it in `.env`):
+
+```bash
+cast wallet import deployer --interactive     # paste key, choose a password
+cast wallet address --account deployer        # confirm the address; fund it from the faucet
 ```
 
 Deploy + verify:
@@ -27,6 +33,7 @@ Deploy + verify:
 source .env
 forge script script/Deploy.s.sol:Deploy \
   --rpc-url base_sepolia \
+  --account deployer \
   --broadcast \
   --verify \
   --etherscan-api-key $BASESCAN_API_KEY \
@@ -75,9 +82,9 @@ pnpm dev                 # http://localhost:4000/api/health
 
 ### `contracts/.env`
 ```
-PRIVATE_KEY=0x...            # deployer; DO NOT commit
 BASESCAN_API_KEY=...
 BASE_SEPOLIA_RPC_URL=https://sepolia.base.org
+# signer lives in the Foundry keystore (`cast wallet import`), not here
 ```
 
 ### `frontend/.env`
