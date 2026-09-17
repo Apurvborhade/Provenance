@@ -15,7 +15,7 @@
 
 ```bash
 cd contracts
-cp .env.example .env        # fill BASESCAN_API_KEY (+ RPC URL if not using the public one)
+cp .env.example .env        # fill ETHERSCAN_API_KEY (+ RPC URL if not using the public one)
 forge build
 forge test -vvv
 ```
@@ -36,7 +36,7 @@ forge script script/Deploy.s.sol:Deploy \
   --account deployer \
   --broadcast \
   --verify \
-  --etherscan-api-key $BASESCAN_API_KEY \
+  --etherscan-api-key $ETHERSCAN_API_KEY \
   -vvvv
 ```
 
@@ -44,7 +44,7 @@ If `--verify` fails, verify separately:
 
 ```bash
 forge verify-contract <ADDRESS> src/DonationTracker.sol:DonationTracker \
-  --chain base-sepolia --etherscan-api-key $BASESCAN_API_KEY --watch
+  --chain base-sepolia --etherscan-api-key $ETHERSCAN_API_KEY --watch
 ```
 
 Grab the ABI:
@@ -82,7 +82,7 @@ pnpm dev                 # http://localhost:4000/api/health
 
 ### `contracts/.env`
 ```
-BASESCAN_API_KEY=...
+ETHERSCAN_API_KEY=...
 BASE_SEPOLIA_RPC_URL=https://sepolia.base.org
 # signer lives in the Foundry keystore (`cast wallet import`), not here
 ```
