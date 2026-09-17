@@ -116,4 +116,14 @@ export const addrUrl = (a: string) => `${EXPLORER}/address/${a}`;
 
 ## Optional backend integration (only if backend is running)
 
-`src/lib/api.ts` → `api.orgStats(orgId)`, `api.topDonors(orgId)`, `api.milestoneMetadata(orgId, id)`. Wrap in try/catch; if it fails, hide the extra widgets. Never block rendering on it.
+`src/lib/api.ts` → `api.orgStats(orgId)`, `api.topDonors(orgId)`, `api.milestoneMetadata(orgId, id)`, and `uploadReceipt(orgId, id, file)`.
+
+**Exception to "must work without the backend":** attaching proof needs the backend running, because the receipt has to be stored somewhere the on-chain URI can point to. `AttachProofForm` says so if `VITE_API_URL` is unset. Everything else on the page still works.
+
+### Proof-of-spend flow (`AttachProofForm`)
+1. User picks a file (pdf/png/jpg/webp/heic/txt ≤ 10 MB). No URL, no hash typed by anyone.
+2. Browser computes `keccak256(bytes)`.
+3. File is POSTed to `/api/orgs/:orgId/milestones/:id/receipt`; server computes its own keccak256, stores as `uploads/<hash><ext>`, returns `{ hash, uri }`.
+4. Frontend **refuses to proceed if the two hashes differ** — the server can't swap the file.
+5. `attachProof(orgId, id, hash, uri)` goes on-chain.
+Anyone can later download `uri`, hash it, and compare with the on-chain `proofHash`. Wrap in try/catch; if it fails, hide the extra widgets. Never block rendering on it.

@@ -32,6 +32,31 @@ export interface ApiMilestoneMetadata {
   notes: string | null;
 }
 
+export interface ApiReceipt {
+  hash: `0x${string}`;
+  uri: string;
+  size: number;
+  mimetype: string;
+}
+
+export const BACKEND_CONFIGURED = !!BASE;
+
+/** Upload a receipt; the server hashes and stores it. Throws with a readable message on failure. */
+export async function uploadReceipt(orgId: number, milestoneId: number, file: File): Promise<ApiReceipt> {
+  if (!BASE) throw new Error('Backend not configured (VITE_API_URL) — receipts need somewhere to live.');
+  const form = new FormData();
+  form.append('file', file);
+  let res: Response;
+  try {
+    res = await fetch(`${BASE}/api/orgs/${orgId}/milestones/${milestoneId}/receipt`, { method: 'POST', body: form });
+  } catch {
+    throw new Error('Backend unreachable — is it running?');
+  }
+  const json = (await res.json().catch(() => ({}))) as { data?: ApiReceipt; error?: string };
+  if (!res.ok || !json.data) throw new Error(json.error ?? `Upload failed (${res.status})`);
+  return json.data;
+}
+
 export const api = {
   health: () => get<{ ok: boolean }>('/api/health'),
   stats: () => get<ApiStats>('/api/stats'),

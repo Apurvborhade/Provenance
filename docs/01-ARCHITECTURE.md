@@ -75,10 +75,12 @@ writeContract('releaseMilestone', [orgId, milestoneId]) → ETH → payee (vendo
 → MilestoneReleased(…, payee, …) → Released, org.balance drops, org.releasedCount++
 ```
 
-### Attach proof (org owner)
+### Attach proof (org owner) — the one flow that needs the backend
 ```
-UI hashes the receipt file in-browser (keccak256) — file never leaves the machine
-writeContract('attachProof', [orgId, milestoneId, hash, uri]) → ProofAttached → org.proofCount++
+UI: pick receipt file → keccak256 in browser
+→ POST /api/.../receipt → backend hashes again, stores uploads/<hash><ext>, returns { hash, uri }
+→ UI checks server hash == local hash (else abort)
+→ writeContract('attachProof', [orgId, milestoneId, hash, uri]) → ProofAttached → org.proofCount++
 Until this happens, addMilestone reverts ProofRequired(milestoneId) for that org.
 ```
 
@@ -90,7 +92,7 @@ Until this happens, addMilestone reverts ProofRequired(milestoneId) for that org
 | Admin approves, org releases | Separation of duties — org can't approve its own spend, admin can't withdraw |
 | Release pays the payee, not the org | Money never sits in the org wallet; the approved destination is the actual destination |
 | Proof gates the next request | Cheapest possible "show evidence" lever; O(1) via releasedCount/proofCount counters |
-| Hash + URI, not the file | Chain stores a 32-byte commitment; hosting is off-chain (IPFS pinning is future scope) |
+| Hash + URI on-chain, file on the backend | Chain stores a 32-byte commitment; the backend stores the bytes content-addressed by that hash. Swap for IPFS later without touching the contract |
 | Frontend reads chain directly | Removes indexer/sync bugs as a demo risk |
 | Events for every state change | Cheap, indexable, and give tx hashes for the audit trail |
 | `getMilestones()` returns full array | One RPC call for the whole table |

@@ -96,6 +96,7 @@ VITE_API_URL=http://localhost:4000          # optional
 ### `backend/.env`
 ```
 PORT=4000
+PUBLIC_URL=http://localhost:4000      # receipt URIs written on-chain point here
 DATABASE_URL="file:./dev.db"
 RPC_URL=https://sepolia.base.org
 CONTRACT_ADDRESS=0x0000000000000000000000000000000000000000

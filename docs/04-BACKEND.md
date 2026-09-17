@@ -11,7 +11,7 @@ The demo does **not** need it. It exists to:
 3. Store **off-chain metadata** that doesn't belong on-chain: milestone receipt URLs, notes, org profile.
 4. Be the natural home for Future Scope (IPFS pinning, analytics).
 
-**Hard rule:** the frontend must render fully if this server is down.
+**Hard rule:** the frontend must render fully if this server is down. The one exception is **receipt upload** (`AttachProofForm`) — that needs somewhere to store the file, so the backend must be up for the proof step of the demo.
 
 ## Stack
 
@@ -72,6 +72,8 @@ Amounts are stored as **string** (wei) — SQLite has no 256-bit ints and JS `nu
 | GET | `/api/orgs/:orgId/milestones` | milestones joined with metadata |
 | GET | `/api/orgs/:orgId/milestones/:id/metadata` | `{ receiptUrl, notes }` |
 | PUT | `/api/orgs/:orgId/milestones/:id/metadata` | body `{ receiptUrl?, notes? }` → upsert. **No auth in v1** — future: org owner signs a message, verify against `Org.owner` |
+| POST | `/api/orgs/:orgId/milestones/:id/receipt` | multipart `file` → server keccak256 → `uploads/<hash><ext>` → `{ hash, uri, size, mimetype }`. 201. |
+| GET | `/api/receipts/:filename` | the stored file; name must be `0x<64 hex>.<ext>` |
 
 All responses: `{ data: ... }` or `{ error: string }`. Aggregation lives in `src/lib/aggregate.ts`.
 
@@ -103,6 +105,7 @@ pnpm prisma:studio  # browse the DB
 
 ```
 PORT=4000
+PUBLIC_URL=http://localhost:4000      # embedded in on-chain receipt URIs — use a LAN IP / tunnel for the demo
 DATABASE_URL="file:./dev.db"
 RPC_URL=https://sepolia.base.org
 CONTRACT_ADDRESS=0x...

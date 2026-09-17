@@ -110,3 +110,10 @@ a.btn:hover { text-decoration: none; }
 .warn-text { color: var(--amber); }
 .proof-form .sub { color: var(--muted); font-size: 0.85rem; margin: 0 0 12px; }
 input[type="file"].input { padding: 7px; }
+.proof-steps { list-style: none; padding: 0; margin: 0 0 12px; font-size: 0.85rem; color: var(--muted); }
+.proof-steps li { padding: 4px 0 4px 22px; position: relative; }
+.proof-steps li::before { content: '○'; position: absolute; left: 4px; }
+.proof-steps li.active { color: var(--text); }
+.proof-steps li.active::before { content: '●'; color: var(--primary); }
+.proof-steps li.done { color: var(--text); }
+.proof-steps li.done::before { content: '✓'; color: var(--green); }
