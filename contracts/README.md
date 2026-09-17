@@ -1,4 +1,4 @@
-# contracts/ — DonationTracker (Foundry)
+# contracts/ — DonationPlatform (Foundry)
 
 Owner: **Apurva**. Spec: [`../docs/02-SMART-CONTRACT.md`](../docs/02-SMART-CONTRACT.md)
 
@@ -14,5 +14,5 @@ source .env
 forge script script/Deploy.s.sol:Deploy --rpc-url base_sepolia --account <name> --broadcast --verify --etherscan-api-key $ETHERSCAN_API_KEY -vvvv
 
 # ABI for the frontend
-jq '.abi' out/DonationTracker.sol/DonationTracker.json
+jq '.abi' out/DonationPlatform.sol/DonationPlatform.json
 ```
