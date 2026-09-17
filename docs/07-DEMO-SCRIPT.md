@@ -1,7 +1,7 @@
 # 07 — Demo Script (≈ 4 minutes)
 
 **Driver:** Apurva (wallet + clicks) · **Narrator:** Aditya (slides + talking points)
-**Before starting:** wallet unlocked, on Base Sepolia, ≥ 0.05 test ETH, dashboard open at `localhost:5173`, Basescan contract page open in another tab, **backend running (required for the receipt upload in step 6b)**, a receipt PDF/photo on the desktop.
+**Before starting:** wallet unlocked, on Base Sepolia, ≥ 0.05 test ETH, dashboard open at `localhost:5173`, Basescan contract page open in another tab, **backend running with `PINATA_JWT` set (required for the receipt upload in step 6b)**, a receipt PDF/photo on the desktop.
 
 ---
 
@@ -36,9 +36,10 @@
 ### 6b. The accountability hook (40 s) — *this is the judges' question, pre-empted*
 - Try to add another milestone → button disabled, banner: **"Proof required"**
 > "Can the chain see textbooks? No. So we do the next best thing: the org is now frozen until it shows a receipt."
-- Row shows **Attach proof** → pick a receipt file (have a PDF/photo ready on the desktop) → watch the 3 steps tick: hashed locally ✓ → uploaded & server hash matches ✓ → confirm in wallet
+- Row shows **Attach proof** → pick a receipt file (have a PDF/photo ready on the desktop) → watch the 3 steps tick: hashed locally ✓ → pinned to IPFS, CID shown, server hash matches ✓ → confirm in wallet
 - Row flips to **✓ receipt**, stats show **Proofed 1/1**, request form unlocks
-> "The receipt hash is on-chain forever. Anyone can download the file and check it matches. And the org's track record — proofed 1 of 1 — is the first thing a donor sees on its card."
+- Click **✓ IPFS receipt** → opens on a public gateway
+> "The receipt lives on IPFS and its hash is on-chain forever — no server of ours needs to exist for anyone to check it. And the org's track record — proofed 1 of 1 — is the first thing a donor sees on its card."
 
 *(With two wallets: switch MetaMask account between steps 5 and 6 to show that the org owner literally cannot approve.)*
 
@@ -48,7 +49,6 @@
 
 ### 8. Future scope (20 s) — slide 3
 - Multi-approver / DAO instead of single platform admin
-- Pin receipts to IPFS from the app (hash is already on-chain)
 - Third-party auditor attestations (EAS on Base) on top of org-submitted proof
 - (Backend already scaffolded: indexer + metadata API for receipts and analytics)
 

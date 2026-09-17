@@ -1,5 +1,5 @@
 // Owner: Aditya — pure props.
-import { formatEth, shortAddr, txUrl, addrUrl, timeAgo } from '../lib/format';
+import { formatEth, shortAddr, txUrl, addrUrl, timeAgo, resolveUri, isIpfsUri } from '../lib/format';
 import { href } from '../lib/router';
 import type { HistoryItem } from '../lib/types';
 
@@ -31,7 +31,7 @@ function describe(h: HistoryItem) {
     case 'released':
       return <>Milestone #{h.milestoneId} — <strong>{formatEth(h.amount!)} ETH</strong> paid to <a href={addrUrl(h.payee!)} target="_blank" rel="noreferrer" className="mono">{shortAddr(h.payee!)}</a></>;
     case 'proofAttached':
-      return <>Milestone #{h.milestoneId} — <a href={h.proofUri} target="_blank" rel="noreferrer">receipt ↗</a> hashed on-chain</>;
+      return <>Milestone #{h.milestoneId} — <a href={resolveUri(h.proofUri!)} target="_blank" rel="noreferrer">{isIpfsUri(h.proofUri!) ? 'IPFS receipt' : 'receipt'} ↗</a> hashed on-chain</>;
   }
 }
 

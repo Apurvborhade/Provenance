@@ -34,9 +34,14 @@ curl -s -X PUT localhost:4000/api/milestones/0/metadata -H 'content-type: applic
 | GET | `/api/orgs/:orgId/milestones/:id/metadata` |
 | PUT | `/api/orgs/:orgId/milestones/:id/metadata` |
 | POST | `/api/orgs/:orgId/milestones/:id/receipt` — multipart `file` (pdf/png/jpg/webp/heic/txt, ≤10MB) → `{ hash, uri }` |
-| GET | `/api/receipts/:filename` — serves the stored receipt; filename is `<keccak256><ext>` |
+| GET | `/api/receipts/storage` — `{ storage: 'ipfs' \| 'local' }` |
+| GET | `/api/receipts/:filename` — serves a local-fallback receipt; filename is `<keccak256><ext>` |
 
-Receipts are stored on disk under `backend/uploads/` (gitignored), named by their keccak256 hash. Set `PUBLIC_URL` to the address other machines reach the server on — it's embedded in the on-chain `proofUri`.
+## Receipt storage (IPFS)
+
+Set `PINATA_JWT` (free key: https://app.pinata.cloud/developers/api-keys → New Key → Admin or `pinFileToIPFS` scope) and receipts are pinned to IPFS; the on-chain `proofUri` becomes `ipfs://<cid>`, which any gateway can resolve forever. With no key, or if pinning fails and `IPFS_FALLBACK_LOCAL=true`, the file goes to `backend/uploads/` (gitignored) and `proofUri` is `PUBLIC_URL/api/receipts/<keccak256><ext>`. `GET /api/health` reports `receiptStorage: "ipfs" | "local"`.
+
+Either way the on-chain `proofHash` is keccak256 of the bytes — verifiable by downloading from any gateway and re-hashing.
 
 Stats include `releasedCount`, `proofCount`, `proofRate` (0–100 or null) for the org reputation line.
 

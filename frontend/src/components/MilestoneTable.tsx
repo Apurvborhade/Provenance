@@ -1,7 +1,7 @@
 // Owner: Aditya — pure props. `renderActions` lets ManagePanel inject Approve/Release buttons.
 import type { ReactNode } from 'react';
 import { Badge } from './ui';
-import { formatEth, formatDate, shortAddr, addrUrl } from '../lib/format';
+import { formatEth, formatDate, shortAddr, addrUrl, resolveUri, isIpfsUri } from '../lib/format';
 import type { Milestone } from '../lib/types';
 
 interface Props {
@@ -39,7 +39,7 @@ export function MilestoneTable({ milestones, renderActions }: Props) {
               <td className="muted">{m.releasedAt ? formatDate(m.releasedAt) : '—'}</td>
               <td>
                 {m.proof ? (
-                  <a href={m.proof.uri} target="_blank" rel="noreferrer" title={m.proof.hash} className="proof ok">✓ receipt ↗</a>
+                  <a href={resolveUri(m.proof.uri)} target="_blank" rel="noreferrer" title={`${m.proof.uri}\nkeccak256 ${m.proof.hash}`} className="proof ok">✓ {isIpfsUri(m.proof.uri) ? 'IPFS receipt' : 'receipt'} ↗</a>
                 ) : m.status === 'released' ? (
                   <span className="proof missing">awaiting proof</span>
                 ) : (

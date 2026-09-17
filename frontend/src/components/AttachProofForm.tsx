@@ -24,9 +24,10 @@ export function AttachProofForm({ milestone, busy, onSubmit, onCancel }: Props) 
   const [file, setFile] = useState<File | null>(null);
   const [localHash, setLocalHash] = useState<Hex | null>(null);
   const [uri, setUri] = useState<string | null>(null);
+  const [stored, setStored] = useState<{ storage: 'ipfs' | 'local'; cid?: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const reset = () => { setStep('idle'); setLocalHash(null); setUri(null); setError(null); };
+  const reset = () => { setStep('idle'); setLocalHash(null); setUri(null); setStored(null); setError(null); };
 
   const onFile = async (f: File | undefined) => {
     reset();
@@ -44,6 +45,7 @@ export function AttachProofForm({ milestone, busy, onSubmit, onCancel }: Props) 
         throw new Error('Server returned a different hash than computed locally — refusing to continue.');
       }
       setUri(r.uri);
+      setStored({ storage: r.storage, cid: r.cid });
       setStep('ready');
     } catch (e) {
       setStep('error');
@@ -55,7 +57,7 @@ export function AttachProofForm({ milestone, busy, onSubmit, onCancel }: Props) 
 
   return (
     <div className="proof-form">
-      <p className="sub">Receipt for milestone #{milestone.id} “{milestone.description}”. The file is hashed in your browser, stored by the backend, and the hash is written on-chain permanently.</p>
+      <p className="sub">Receipt for milestone #{milestone.id} “{milestone.description}”. The file is hashed in your browser, pinned to IPFS, and the hash + IPFS address are written on-chain permanently.</p>
 
       {!BACKEND_CONFIGURED && <p className="proof missing">Backend not configured — set <code>VITE_API_URL</code> to enable receipt uploads.</p>}
 
@@ -67,7 +69,11 @@ export function AttachProofForm({ milestone, busy, onSubmit, onCancel }: Props) 
       {file && (
         <ul className="proof-steps">
           <li className={localHash ? 'done' : step === 'hashing' ? 'active' : ''}>Hash locally {localHash && <span className="mono muted">{localHash.slice(0, 14)}…</span>}</li>
-          <li className={uri ? 'done' : step === 'uploading' ? 'active' : ''}>Upload &amp; verify server hash matches</li>
+          <li className={uri ? 'done' : step === 'uploading' ? 'active' : ''}>
+            Pin to IPFS &amp; verify server hash matches
+            {stored?.storage === 'ipfs' && stored.cid && <> <span className="mono muted">{stored.cid.slice(0, 12)}…</span></>}
+            {stored?.storage === 'local' && <> <span className="proof missing">(IPFS unavailable — stored on backend)</span></>}
+          </li>
           <li className={step === 'ready' ? 'active' : ''}>Commit hash on-chain</li>
         </ul>
       )}

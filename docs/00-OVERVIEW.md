@@ -34,7 +34,6 @@ A multi-org on-chain donation tracker where **every donation, milestone, release
 ## Non-goals (explicitly out of scope for the hackathon)
 
 - Multi-sig / DAO approval (single platform admin approves for now)
-- Pinning receipts to IPFS from the app (we store the hash + a URI; hosting is the org's job in v1)
 - Verifying that a receipt is *genuine* — the chain can only prove it existed at a point in time
 - Mainnet deployment
 - Auth, user accounts, KYC

@@ -35,3 +35,13 @@ export function timeAgo(unixSeconds: number): string {
   if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
   return `${Math.floor(diff / 86400)}d ago`;
 }
+
+export const IPFS_GATEWAY = import.meta.env.VITE_IPFS_GATEWAY || 'https://gateway.pinata.cloud/ipfs';
+
+/** ipfs://<cid>[/path] → https://gateway/<cid>[/path]; http(s) URLs pass through. */
+export function resolveUri(uri: string): string {
+  if (uri.startsWith('ipfs://')) return `${IPFS_GATEWAY.replace(/\/$/, '')}/${uri.slice('ipfs://'.length)}`;
+  return uri;
+}
+
+export const isIpfsUri = (uri: string) => uri.startsWith('ipfs://');

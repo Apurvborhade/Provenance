@@ -17,6 +17,18 @@ const schema = z.object({
     .string()
     .default('true')
     .transform((v) => v === 'true'),
+  /** Pinata JWT — when set, receipts are pinned to IPFS and `ipfs://<cid>` goes on-chain. */
+  PINATA_JWT: z
+    .string()
+    .optional()
+    .transform((v) => (v && v.trim() ? v.trim() : undefined)),
+  IPFS_GATEWAY: z.string().url().default('https://gateway.pinata.cloud/ipfs'),
+  IPFS_TIMEOUT_MS: z.coerce.number().int().positive().default(30_000),
+  /** If pinning fails, store on local disk instead of failing the upload. */
+  IPFS_FALLBACK_LOCAL: z
+    .string()
+    .default('true')
+    .transform((v) => v === 'true'),
 });
 
 const parsed = schema.parse(process.env);

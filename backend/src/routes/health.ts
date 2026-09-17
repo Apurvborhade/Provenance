@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { prisma } from '../lib/prisma.js';
 import { CONTRACT_ADDRESS, CONTRACT_CONFIGURED, env } from '../env.js';
 import { asyncHandler, ok } from '../lib/http.js';
+import { isIpfsEnabled } from '../lib/storage.js';
 
 export const healthRouter = Router();
 
@@ -15,6 +16,7 @@ healthRouter.get(
       contract: CONTRACT_ADDRESS,
       contractConfigured: CONTRACT_CONFIGURED,
       indexerEnabled: env.INDEXER_ENABLED,
+      receiptStorage: isIpfsEnabled() ? 'ipfs' : 'local',
       lastIndexedBlock: state?.lastBlock ?? null,
     });
   }),

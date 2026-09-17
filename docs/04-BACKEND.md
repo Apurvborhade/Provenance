@@ -37,10 +37,12 @@ backend/
     │   ├── prisma.ts         # PrismaClient singleton
     │   └── viem.ts           # publicClient for Base Sepolia
     ├── lib/aggregate.ts      # statsFor(orgId?), topDonors(orgId?, limit)
+    ├── lib/storage.ts        # storeReceipt(): Pinata IPFS pin, local-disk fallback
     ├── routes/
     │   ├── health.ts         # GET /api/health
     │   ├── stats.ts          # GET /api/stats, /api/donors/top (platform-wide)
-    │   └── orgs.ts           # GET /api/orgs..., GET/PUT .../milestones/:id/metadata
+    │   ├── orgs.ts           # GET /api/orgs..., GET/PUT .../milestones/:id/metadata
+    │   └── receipts.ts       # POST .../receipt (multer), GET /api/receipts/*
     └── services/
         └── indexer.ts        # polls getLogs, upserts into DB
 ```
@@ -72,8 +74,9 @@ Amounts are stored as **string** (wei) — SQLite has no 256-bit ints and JS `nu
 | GET | `/api/orgs/:orgId/milestones` | milestones joined with metadata |
 | GET | `/api/orgs/:orgId/milestones/:id/metadata` | `{ receiptUrl, notes }` |
 | PUT | `/api/orgs/:orgId/milestones/:id/metadata` | body `{ receiptUrl?, notes? }` → upsert. **No auth in v1** — future: org owner signs a message, verify against `Org.owner` |
-| POST | `/api/orgs/:orgId/milestones/:id/receipt` | multipart `file` → server keccak256 → `uploads/<hash><ext>` → `{ hash, uri, size, mimetype }`. 201. |
-| GET | `/api/receipts/:filename` | the stored file; name must be `0x<64 hex>.<ext>` |
+| POST | `/api/orgs/:orgId/milestones/:id/receipt` | multipart `file` → server keccak256 → **pin to IPFS** (Pinata) → `{ hash, uri: "ipfs://<cid>", url, storage, cid, size, mimetype }`. 201. Falls back to local disk if no `PINATA_JWT` / pin fails. |
+| GET | `/api/receipts/storage` | `{ storage: "ipfs" \| "local" }` |
+| GET | `/api/receipts/:filename` | local-fallback file; name must be `0x<64 hex>.<ext>` |
 
 All responses: `{ data: ... }` or `{ error: string }`. Aggregation lives in `src/lib/aggregate.ts`.
 
@@ -105,8 +108,11 @@ pnpm prisma:studio  # browse the DB
 
 ```
 PORT=4000
-PUBLIC_URL=http://localhost:4000      # embedded in on-chain receipt URIs — use a LAN IP / tunnel for the demo
+PUBLIC_URL=http://localhost:4000      # only used for local-fallback receipt URIs
 DATABASE_URL="file:./dev.db"
+PINATA_JWT=                            # set → receipts pinned to IPFS, ipfs://<cid> on-chain
+IPFS_GATEWAY=https://gateway.pinata.cloud/ipfs
+IPFS_FALLBACK_LOCAL=true
 RPC_URL=https://sepolia.base.org
 CONTRACT_ADDRESS=0x...
 CONTRACT_DEPLOY_BLOCK=0

@@ -52,7 +52,7 @@ export const mockOrgs: Org[] = [
 
 export const mockMilestones: Record<number, Milestone[]> = {
   0: [
-    { id: 0, orgId: 0, description: 'Purchased 50 textbooks for Grade 5', amount: parseEther('0.02'), payee: MOCK_VENDOR, status: 'released', createdAt: now - 86400 * 3, releasedAt: now - 86400 * 2, proof: { hash: '0xabc0000000000000000000000000000000000000000000000000000000000abc', uri: 'https://example.com/receipts/textbooks.pdf', at: now - 86400 } },
+    { id: 0, orgId: 0, description: 'Purchased 50 textbooks for Grade 5', amount: parseEther('0.02'), payee: MOCK_VENDOR, status: 'released', createdAt: now - 86400 * 3, releasedAt: now - 86400 * 2, proof: { hash: '0xabc0000000000000000000000000000000000000000000000000000000000abc', uri: 'ipfs://bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi', at: now - 86400 } },
     { id: 1, orgId: 0, description: 'School lunch program — week 1', amount: parseEther('0.015'), payee: MOCK_VENDOR, status: 'approved', createdAt: now - 86400, releasedAt: null, proof: null },
     { id: 2, orgId: 0, description: 'Repair classroom roof', amount: parseEther('0.05'), payee: MOCK_ORG_OWNER, status: 'pending', createdAt: now - 3600, releasedAt: null, proof: null },
   ],
@@ -69,7 +69,7 @@ export const mockPlatformStats: PlatformStats = {
 
 export const mockHistory: HistoryItem[] = [
   { kind: 'requested', orgId: 0, txHash: '0x3333333333333333333333333333333333333333333333333333333333333333', blockNumber: 1003n, milestoneId: 2, description: 'Repair classroom roof', amount: parseEther('0.05'), timestamp: now - 3600 },
-  { kind: 'proofAttached', orgId: 0, txHash: '0x2323232323232323232323232323232323232323232323232323232323232323', blockNumber: 1002n, milestoneId: 0, proofUri: 'https://example.com/receipts/textbooks.pdf', timestamp: now - 86400 },
+  { kind: 'proofAttached', orgId: 0, txHash: '0x2323232323232323232323232323232323232323232323232323232323232323', blockNumber: 1002n, milestoneId: 0, proofUri: 'ipfs://bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi', timestamp: now - 86400 },
   { kind: 'released', orgId: 0, txHash: '0x2222222222222222222222222222222222222222222222222222222222222222', blockNumber: 1002n, milestoneId: 0, amount: parseEther('0.02'), payee: MOCK_VENDOR, timestamp: now - 86400 * 2 },
   { kind: 'donated', orgId: 0, txHash: '0x1111111111111111111111111111111111111111111111111111111111111111', blockNumber: 1001n, actor: '0x8888000000000000000000000000000000008888', amount: parseEther('0.1'), message: 'For the kids 💙', timestamp: now - 86400 * 4 },
   { kind: 'orgCreated', orgId: 0, txHash: '0x0000000000000000000000000000000000000000000000000000000000000001', blockNumber: 1000n, actor: MOCK_ORG_OWNER, name: 'Sunrise Primary School', timestamp: now - 86400 * 5 },

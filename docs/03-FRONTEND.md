@@ -123,7 +123,7 @@ export const addrUrl = (a: string) => `${EXPLORER}/address/${a}`;
 ### Proof-of-spend flow (`AttachProofForm`)
 1. User picks a file (pdf/png/jpg/webp/heic/txt ≤ 10 MB). No URL, no hash typed by anyone.
 2. Browser computes `keccak256(bytes)`.
-3. File is POSTed to `/api/orgs/:orgId/milestones/:id/receipt`; server computes its own keccak256, stores as `uploads/<hash><ext>`, returns `{ hash, uri }`.
+3. File is POSTed to `/api/orgs/:orgId/milestones/:id/receipt`; server computes its own keccak256, pins to IPFS, returns `{ hash, uri: "ipfs://<cid>", cid }` (or a local http URL if IPFS is unavailable — the step label says which).
 4. Frontend **refuses to proceed if the two hashes differ** — the server can't swap the file.
 5. `attachProof(orgId, id, hash, uri)` goes on-chain.
-Anyone can later download `uri`, hash it, and compare with the on-chain `proofHash`. Wrap in try/catch; if it fails, hide the extra widgets. Never block rendering on it.
+Anyone can later fetch the CID from any gateway, hash it, and compare with the on-chain `proofHash`. Links in the UI resolve `ipfs://` via `VITE_IPFS_GATEWAY` (`lib/format.ts → resolveUri`). Wrap in try/catch; if it fails, hide the extra widgets. Never block rendering on it.

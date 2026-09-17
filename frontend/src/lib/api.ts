@@ -34,7 +34,12 @@ export interface ApiMilestoneMetadata {
 
 export interface ApiReceipt {
   hash: `0x${string}`;
+  /** goes on-chain: ipfs://<cid> or a local http URL */
   uri: string;
+  /** browser-openable */
+  url: string;
+  storage: 'ipfs' | 'local';
+  cid?: string;
   size: number;
   mimetype: string;
 }

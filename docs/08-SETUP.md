@@ -10,6 +10,7 @@
 | MetaMask | browser extension; add **Base Sepolia** network (chainId 84532, RPC `https://sepolia.base.org`, explorer `https://sepolia.basescan.org`) |
 | Test ETH | https://www.alchemy.com/faucets/base-sepolia or https://portal.cdp.coinbase.com/products/faucet |
 | Basescan API key (for verify) | https://basescan.org/myapikey |
+| Pinata JWT (receipts → IPFS) | https://app.pinata.cloud/developers/api-keys — free tier, key with `pinFileToIPFS` |
 
 ## 1. Contracts (Apurva)
 
@@ -96,7 +97,8 @@ VITE_API_URL=http://localhost:4000          # optional
 ### `backend/.env`
 ```
 PORT=4000
-PUBLIC_URL=http://localhost:4000      # receipt URIs written on-chain point here
+PINATA_JWT=                            # https://app.pinata.cloud/developers/api-keys — pins receipts to IPFS
+PUBLIC_URL=http://localhost:4000      # only for local-fallback receipt URIs
 DATABASE_URL="file:./dev.db"
 RPC_URL=https://sepolia.base.org
 CONTRACT_ADDRESS=0x0000000000000000000000000000000000000000

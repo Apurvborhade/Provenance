@@ -1,18 +1,15 @@
-// Receipt storage for proof-of-spend. The file is hashed server-side (keccak256) and stored by hash,
-// so the URL the org puts on-chain is content-addressed: same bytes → same hash → same URL.
-// The frontend hashes the file independently and refuses to proceed if the two hashes differ.
+// Receipt upload for proof-of-spend. The file is hashed server-side (keccak256) and handed to the
+// storage layer (IPFS via Pinata, or local disk fallback). The frontend hashes the file independently
+// and refuses to proceed if the two hashes differ.
 import { Router } from 'express';
 import multer from 'multer';
 import path from 'node:path';
-import fs from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { keccak256 } from 'viem';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma.js';
 import { asyncHandler, fail, ok } from '../lib/http.js';
-import { env } from '../env.js';
-
-export const UPLOAD_DIR = path.resolve(process.cwd(), 'uploads');
+import { storeReceipt, isIpfsEnabled, UPLOAD_DIR } from '../lib/storage.js';
 const MAX_BYTES = 10 * 1024 * 1024;
 const ALLOWED = new Set(['application/pdf', 'image/png', 'image/jpeg', 'image/webp', 'image/heic', 'text/plain']);
 
@@ -35,7 +32,8 @@ export const receiptsRouter = Router();
 
 /**
  * POST /api/orgs/:orgId/milestones/:id/receipt  (multipart, field "file")
- * → { hash, uri, size, mimetype }
+ * → { hash, uri, url, storage, cid?, size, mimetype }
+ * uri is what goes on-chain (ipfs://<cid> or a local http URL); url is browser-openable.
  * No auth in v1 (the on-chain attachProof is what's gated — only the org owner can commit the hash).
  */
 receiptsRouter.post(
@@ -49,27 +47,30 @@ receiptsRouter.post(
     const hash = keccak256(req.file.buffer);
     const ext = extFor(req.file.mimetype, req.file.originalname);
     const filename = `${hash}${ext}`;
-    const dest = path.join(UPLOAD_DIR, filename);
 
-    await fs.mkdir(UPLOAD_DIR, { recursive: true });
-    if (!existsSync(dest)) await fs.writeFile(dest, req.file.buffer);
-
-    const uri = `${env.PUBLIC_URL}/api/receipts/${filename}`;
+    const stored = await storeReceipt(req.file.buffer, filename, req.file.mimetype, {
+      orgId: String(p.data.orgId),
+      milestoneId: String(p.data.id),
+      keccak256: hash,
+    });
 
     // Mirror into off-chain metadata so /milestones shows the receipt even before the tx is indexed.
     await prisma.milestoneMetadata
       .upsert({
         where: { orgId_milestoneId: { orgId: p.data.orgId, milestoneId: p.data.id } },
-        create: { orgId: p.data.orgId, milestoneId: p.data.id, receiptUrl: uri },
-        update: { receiptUrl: uri },
+        create: { orgId: p.data.orgId, milestoneId: p.data.id, receiptUrl: stored.url },
+        update: { receiptUrl: stored.url },
       })
       .catch(() => undefined); // milestone may not be indexed yet — fine
 
-    ok(res, { hash, uri, size: req.file.size, mimetype: req.file.mimetype }, 201);
+    ok(res, { hash, ...stored, size: req.file.size, mimetype: req.file.mimetype }, 201);
   }),
 );
 
-/** GET /api/receipts/:filename — the stored file. Filename is <keccak256><ext>, so it's tamper-evident by construction. */
+/** GET /api/receipts/storage — which backend is active, so the UI can label it. */
+receiptsRouter.get('/receipts/storage', (_req, res) => ok(res, { storage: isIpfsEnabled() ? 'ipfs' : 'local' }));
+
+/** GET /api/receipts/:filename — local-fallback files only. Filename is <keccak256><ext>, tamper-evident by construction. */
 receiptsRouter.get(
   '/receipts/:filename',
   asyncHandler(async (req, res) => {

@@ -78,7 +78,8 @@ writeContract('releaseMilestone', [orgId, milestoneId]) → ETH → payee (vendo
 ### Attach proof (org owner) — the one flow that needs the backend
 ```
 UI: pick receipt file → keccak256 in browser
-→ POST /api/.../receipt → backend hashes again, stores uploads/<hash><ext>, returns { hash, uri }
+→ POST /api/.../receipt → backend hashes again, pins to IPFS via Pinata, returns { hash, uri: ipfs://<cid> }
+   (no PINATA_JWT or pin failure → local disk fallback, uri = http URL on the backend)
 → UI checks server hash == local hash (else abort)
 → writeContract('attachProof', [orgId, milestoneId, hash, uri]) → ProofAttached → org.proofCount++
 Until this happens, addMilestone reverts ProofRequired(milestoneId) for that org.
@@ -92,7 +93,8 @@ Until this happens, addMilestone reverts ProofRequired(milestoneId) for that org
 | Admin approves, org releases | Separation of duties — org can't approve its own spend, admin can't withdraw |
 | Release pays the payee, not the org | Money never sits in the org wallet; the approved destination is the actual destination |
 | Proof gates the next request | Cheapest possible "show evidence" lever; O(1) via releasedCount/proofCount counters |
-| Hash + URI on-chain, file on the backend | Chain stores a 32-byte commitment; the backend stores the bytes content-addressed by that hash. Swap for IPFS later without touching the contract |
+| keccak256 + `ipfs://cid` on-chain | Two independent content addresses for the same bytes: the CID lets any gateway serve it forever; the keccak hash is what the browser verified before signing |
+| Local-disk fallback for receipts | A pinning outage during the demo degrades to "stored on backend", never to "can't attach proof" |
 | Frontend reads chain directly | Removes indexer/sync bugs as a demo risk |
 | Events for every state change | Cheap, indexable, and give tx hashes for the audit trail |
 | `getMilestones()` returns full array | One RPC call for the whole table |
