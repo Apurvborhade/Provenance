@@ -1,6 +1,6 @@
 # Provenance — Transparent Donation Tracking (Hack2Ignite WB-05)
 
-Multi-organisation on-chain donation + milestone-based fund release tracker. Any NGO registers an org; donors give ETH with a message; the org requests spend milestones, the platform admin approves, the org releases. Every donation, milestone request, approval and release is an on-chain event on **Base Sepolia**, and the dashboard reads directly from the contract so nothing shown is "claimed" — it's all verifiable on Basescan.
+Multi-organisation on-chain donation + milestone-based fund release tracker. Any NGO registers an org; donors give ETH with a message; the org requests a spend milestone naming a vendor, the platform admin approves, funds go straight to the vendor, and the org must attach a receipt hash before it can ask for more. Every donation, milestone request, approval and release is an on-chain event on **Base Sepolia**, and the dashboard reads directly from the contract so nothing shown is "claimed" — it's all verifiable on Basescan.
 
 ## Repo layout
 

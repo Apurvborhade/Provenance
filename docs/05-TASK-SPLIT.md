@@ -13,7 +13,7 @@ The interface between the two lanes is **plain TypeScript props/types** (`fronte
 
 ### A1. Smart contract (contracts/)
 - [x] Implement `src/DonationPlatform.sol` per `02-SMART-CONTRACT.md` (multi-org, admin approves)
-- [x] `test/DonationPlatform.t.sol` — 26 tests pass
+- [x] `test/DonationPlatform.t.sol` — 35 tests pass (incl. payee, proof, sequencing)
 - [ ] `forge fmt`, `forge build` clean, no warnings
 - [ ] Gas-snapshot once (`forge snapshot`) just to have it in the repo
 
@@ -23,7 +23,7 @@ The interface between the two lanes is **plain TypeScript props/types** (`fronte
 - [ ] Confirm "Contract Source Code Verified" on Basescan
 - [ ] Paste address + ABI into `frontend/src/config/contract.ts`
 - [ ] Paste address + deploy block into `backend/.env.example` and tell Aditya
-- [ ] Seed on-chain: create 2 orgs, donate to each with a message, run one full milestone cycle — so the directory isn't empty at demo time
+- [ ] Seed on-chain: create 2 orgs, donate to each with a message, run one full cycle **through proof** on one of them — so the directory shows a 'Proofed 1/1' org at demo time
 
 ### A3. Frontend chain wiring (frontend/src/config + hooks)
 - [ ] `config/wagmi.ts` — baseSepolia, injected connector, http transport
@@ -39,7 +39,7 @@ The interface between the two lanes is **plain TypeScript props/types** (`fronte
 
 ### A4. Wire hooks into Aditya's components
 - [x] `ConnectButton.tsx`, `DonateForm.tsx`, `CreateOrgForm.tsx`, `ManagePanel.tsx` wired
-- [ ] End-to-end on testnet: create org → donate → add → approve → release → reload → state persists
+- [ ] End-to-end on testnet: create org → donate → add (with payee) → approve → release → **try to add again (blocked) → attach proof → add works** → reload → state persists
 - [ ] Two-wallet test: deployer approves, second wallet owns the org — confirm the Manage tab shows the right buttons for each
 
 ### A5. Indexer snippet for backend
@@ -60,7 +60,7 @@ The interface between the two lanes is **plain TypeScript props/types** (`fronte
 
 ### B2. Frontend data components (props in, JSX out)
 - [x] `StatsBar.tsx` (takes `StatTile[]`), `MilestoneTable.tsx`, `TxHistory.tsx` (donor messages, org column), `OrgCard.tsx`, `OrgList.tsx` — baseline versions exist
-- [ ] Polish `OrgCard` — progress feel (raised vs released), truncation, hover
+- [ ] Polish `OrgCard` — progress feel (raised vs released), the 'Proofed x/y' reputation line, truncation, hover
 - [ ] Donor leaderboard widget on `OrgPage` (data from `api.topDonors(orgId)`, hide if backend down)
 - [ ] Skeleton loaders instead of spinner text; nicer empty states
 - [ ] Run everything with `VITE_USE_MOCK=true` — 3 mock orgs are in `lib/mock.ts`

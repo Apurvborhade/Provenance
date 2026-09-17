@@ -54,7 +54,7 @@ frontend/src/
 │   ├── OrgCard.tsx, OrgList.tsx
 │   ├── StatsBar.tsx            # takes StatTile[]; helpers ethTile() / numTile()
 │   ├── MilestoneTable.tsx, TxHistory.tsx
-│   ├── CreateOrgForm.tsx, DonateForm.tsx, ManagePanel.tsx
+│   ├── CreateOrgForm.tsx, DonateForm.tsx, ManagePanel.tsx, AttachProofForm.tsx
 └── pages/
     ├── HomePage.tsx, CreateOrgPage.tsx, OrgPage.tsx
 ```
@@ -96,7 +96,10 @@ Show 3 states in the button: `Confirm in wallet…` → `Confirming…` → `Don
 - Wallet not connected (Donate / Org tabs show a "Connect wallet" prompt)
 - Connected but wrong chain → "Switch to Base Sepolia" button (`useSwitchChain`) — Apurva wires, Aditya styles
 - Connected, neither org owner nor admin → Manage tab shows who can do what (owner + admin addresses)
-- Org owner sees "Request a release" form + Release buttons; admin sees Approve buttons; a wallet that is both sees everything
+- Org owner sees "Request a release" form (with payee field) + Release / Attach proof buttons; admin sees Approve buttons; a wallet that is both sees everything
+- Org owner with an unproofed release → warn banner, request form disabled, "Attach proof" button on the row
+- Public org page with unproofed releases → info banner "cannot request more until proof is attached"
+- Proof column: ✓ receipt link (hover = hash) / "awaiting proof" / —
 - Org not found (`#/org/999`) → error banner with link home
 - Empty org directory → "No organisations yet. Be the first to create one."
 - Empty milestones table → "No milestones yet"

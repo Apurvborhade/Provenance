@@ -5,7 +5,7 @@ Hackathon project (Hack2Ignite WB-05): on-chain donation + milestone-release tra
 **Read `docs/README.md` first**, then the doc for the area you're touching. `docs/05-TASK-SPLIT.md` says who owns what — respect the ownership boundaries listed there.
 
 ## Layout
-- `contracts/` — Foundry. `forge test` must stay green (26 tests). Contract spec: `docs/02-SMART-CONTRACT.md`.
+- `contracts/` — Foundry. `forge test` must stay green (35 tests). Contract spec: `docs/02-SMART-CONTRACT.md`.
 - `frontend/` — Vite + React + TS + wagmi/viem. `pnpm typecheck` + `pnpm build` must pass. Spec: `docs/03-FRONTEND.md`.
 - `backend/` — Express + TS + Prisma (SQLite). Optional; frontend must work without it. Spec: `docs/04-BACKEND.md`.
 

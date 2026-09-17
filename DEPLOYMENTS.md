@@ -1,6 +1,15 @@
 # Deployments
 
-## Current: DonationPlatform (multi-org)
+## ⏳ Redeploy pending — contract changed (payee, attachProof, ProofRequired)
+
+The address below is the multi-org contract **without** proof-of-spend. Frontend and backend are wired to it until you redeploy:
+
+```bash
+cd contracts && source .env
+forge script script/Deploy.s.sol:Deploy --rpc-url base_sepolia --account provenance --broadcast --verify --etherscan-api-key $ETHERSCAN_API_KEY -vvvv
+```
+
+## Current: DonationPlatform (multi-org, v2 — no proof yet)
 
 | Network | Contract | Address | Deploy block | Admin | Verified |
 |---|---|---|---|---|---|

@@ -25,13 +25,20 @@
 > "My donation, my message, my address, timestamped. I don't need to trust the org's ledger."
 
 ### 5. Org requests a milestone (30 s)
-- **Manage** tab (wallet is org owner) → `Purchased 50 textbooks` / `0.005` → **Add milestone** → **Pending**
-> "The org can't just withdraw. It has to publicly say what the money is for — and it can't approve itself."
+- **Manage** tab (wallet is org owner) → `Purchased 50 textbooks` / `0.005` / payee = **a second address (the "bookstore")** → **Add milestone** → **Pending**
+> "The org can't just withdraw. It has to say what the money is for *and who gets paid* — and it can't approve itself."
 
 ### 6. Admin approves, org releases (45 s)
 - Same wallet is also platform admin in the single-wallet demo (both pills show) → **Approve** → **Approved**
-- **Release** → **Released**, In escrow drops by 0.005, Released goes up → click release tx → ETH to org wallet
-> "Milestone, amount, approver, timestamp, destination — all in the transactions. Not a PDF, not a claim."
+- **Release to 0x…** → **Released**, In escrow drops by 0.005 → click release tx → Basescan shows ETH landing in the **bookstore's** wallet, not the org's
+> "The money never touched the NGO. It went straight to the vendor the admin approved."
+
+### 6b. The accountability hook (40 s) — *this is the judges' question, pre-empted*
+- Try to add another milestone → button disabled, banner: **"Proof required"**
+> "Can the chain see textbooks? No. So we do the next best thing: the org is now frozen until it shows a receipt."
+- Row shows **Attach proof** → paste a receipt URL (+ optionally pick a file — hashed locally) → confirm
+- Row flips to **✓ receipt**, stats show **Proofed 1/1**, request form unlocks
+> "The receipt hash is on-chain forever. Anyone can download the file and check it matches. And the org's track record — proofed 1 of 1 — is the first thing a donor sees on its card."
 
 *(With two wallets: switch MetaMask account between steps 5 and 6 to show that the org owner literally cannot approve.)*
 
@@ -41,8 +48,8 @@
 
 ### 8. Future scope (20 s) — slide 3
 - Multi-approver / DAO instead of single platform admin
-- IPFS receipts hashed on-chain
-- Org reputation: % of raised funds released against milestones, on-chain
+- Pin receipts to IPFS from the app (hash is already on-chain)
+- Third-party auditor attestations (EAS on Base) on top of org-submitted proof
 - (Backend already scaffolded: indexer + metadata API for receipts and analytics)
 
 ### 9. Close (10 s)

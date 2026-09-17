@@ -71,8 +71,15 @@ writeContract('approveMilestone', [orgId, milestoneId]) → MilestoneApproved �
 
 ### Release (org owner)
 ```
-writeContract('releaseMilestone', [orgId, milestoneId]) → ETH → org owner
-→ MilestoneReleased → Released, org.balance drops
+writeContract('releaseMilestone', [orgId, milestoneId]) → ETH → payee (vendor)
+→ MilestoneReleased(…, payee, …) → Released, org.balance drops, org.releasedCount++
+```
+
+### Attach proof (org owner)
+```
+UI hashes the receipt file in-browser (keccak256) — file never leaves the machine
+writeContract('attachProof', [orgId, milestoneId, hash, uri]) → ProofAttached → org.proofCount++
+Until this happens, addMilestone reverts ProofRequired(milestoneId) for that org.
 ```
 
 ## Why this shape
@@ -81,6 +88,9 @@ writeContract('releaseMilestone', [orgId, milestoneId]) → ETH → org owner
 |---|---|
 | One contract, many orgs (not a factory) | One address to verify/index; org creation is one cheap tx; cross-org isolation enforced by per-org balances |
 | Admin approves, org releases | Separation of duties — org can't approve its own spend, admin can't withdraw |
+| Release pays the payee, not the org | Money never sits in the org wallet; the approved destination is the actual destination |
+| Proof gates the next request | Cheapest possible "show evidence" lever; O(1) via releasedCount/proofCount counters |
+| Hash + URI, not the file | Chain stores a 32-byte commitment; hosting is off-chain (IPFS pinning is future scope) |
 | Frontend reads chain directly | Removes indexer/sync bugs as a demo risk |
 | Events for every state change | Cheap, indexable, and give tx hashes for the audit trail |
 | `getMilestones()` returns full array | One RPC call for the whole table |
