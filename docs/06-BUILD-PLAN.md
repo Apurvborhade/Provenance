@@ -2,12 +2,12 @@
 
 | Time | 🟣 Apurva | 🟢 Aditya |
 |---|---|---|
-| 0:00–0:20 | Write `DonationTracker.sol` + tests, `forge test` green | `pnpm install` frontend + backend; UI kit (`Button`, `Card`, `Badge`, `Input`) with global CSS |
+| 0:00–0:20 | Write `DonationPlatform.sol` + tests, `forge test` green | `pnpm install` frontend + backend; UI kit (`Button`, `Card`, `Badge`, `Input`) with global CSS |
 | 0:20–0:40 | Deploy to Base Sepolia, verify on Basescan, copy ABI/address into config | `format.ts`, `mock.ts`; `StatsBar` + `MilestoneTable` rendering mock data |
 | **0:40** | **→ share address + ABI** | **← update backend `.env`** |
-| 0:40–1:00 | `wagmi.ts`, `main.tsx`, `useDonationTracker` reads; `ConnectButton` | `TxHistory`, empty/loading states, `App.tsx` shell with tabs |
+| 0:40–1:00 | `wagmi.ts`, `main.tsx`, `useDonationPlatform` reads; `ConnectButton` | `TxHistory`, empty/loading states, `App.tsx` shell with tabs |
 | 1:00–1:45 | `useDonate` + `DonateForm` wired; first live donation from the UI | Prisma schema, `prisma:push`, express skeleton, `/api/health`, `/api/stats` |
-| 1:45–2:30 | `useMilestoneActions` + `OrgPanel`; `useTxHistory` via getLogs; event watchers | `/api/milestones`, `/api/donations`, metadata PUT; seed script |
+| 1:45–2:30 | `useMilestoneActions` + `ManagePanel`; `useTxHistory` via getLogs; event watchers | `/api/orgs/...` routes, metadata PUT; seed script |
 | 2:30–3:15 | Replace mocks in pages with real hooks; wrong-network handling | Indexer loop using Apurva's `lib/viem.ts`; `curl` tests; backend README |
 | 3:15–3:45 | **Both:** end-to-end on testnet, fix bugs | |
 | 3:45–4:15 | Fix any hook edge cases (tx rejected, RPC timeout) | Styling polish, loading/error states, responsive check |

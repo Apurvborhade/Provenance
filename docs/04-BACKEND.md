@@ -36,23 +36,24 @@ backend/
     ├── lib/
     │   ├── prisma.ts         # PrismaClient singleton
     │   └── viem.ts           # publicClient for Base Sepolia
+    ├── lib/aggregate.ts      # statsFor(orgId?), topDonors(orgId?, limit)
     ├── routes/
     │   ├── health.ts         # GET /api/health
-    │   ├── stats.ts          # GET /api/stats
-    │   ├── donations.ts      # GET /api/donations, GET /api/donors/top
-    │   └── milestones.ts     # GET /api/milestones, GET/PUT /api/milestones/:id/metadata
+    │   ├── stats.ts          # GET /api/stats, /api/donors/top (platform-wide)
+    │   └── orgs.ts           # GET /api/orgs..., GET/PUT .../milestones/:id/metadata
     └── services/
         └── indexer.ts        # polls getLogs, upserts into DB
 ```
 
 ## Prisma schema (summary)
 
-| Model | Fields | Purpose |
+| Model | Key | Purpose |
 |---|---|---|
-| `Donation` | `txHash` (pk), `donor`, `amount` (string wei), `blockNumber`, `timestamp` | one row per `Donated` event |
-| `Milestone` | `id` (pk = on-chain id), `description`, `amount`, `status`, `createdAt`, `releasedAt`, `requestTxHash`, `approveTxHash`, `releaseTxHash` | mirrors chain + tx hashes per step |
-| `MilestoneMetadata` | `milestoneId` (pk, fk), `receiptUrl?`, `notes?`, `updatedAt` | off-chain only |
-| `IndexerState` | `id` (pk = 1), `lastBlock` | cursor so we don't rescan from genesis |
+| `Org` | `id` (on-chain orgId) | owner, name, description, createdAt, createTxHash |
+| `Donation` | `txHash` | orgId, donor, amount (wei string), message, blockNumber, timestamp |
+| `Milestone` | `(orgId, id)` | mirrors chain + `requestTxHash` / `approveTxHash` / `releaseTxHash` |
+| `MilestoneMetadata` | `(orgId, milestoneId)` | off-chain only: `receiptUrl?`, `notes?` |
+| `IndexerState` | `id = 1` | `lastBlock` cursor |
 
 Amounts are stored as **string** (wei) — SQLite has no 256-bit ints and JS `number` loses precision.
 
@@ -60,15 +61,19 @@ Amounts are stored as **string** (wei) — SQLite has no 256-bit ints and JS `nu
 
 | Method | Path | Returns |
 |---|---|---|
-| GET | `/api/health` | `{ ok: true, chainId, contract, lastIndexedBlock }` |
-| GET | `/api/stats` | `{ totalDonated, totalReleased, balance, donorCount, milestoneCount }` (strings in wei) |
-| GET | `/api/donations?limit=50` | latest donations with tx hashes |
-| GET | `/api/donors/top?limit=10` | `[{ donor, total }]` aggregated |
-| GET | `/api/milestones` | all milestones joined with metadata |
-| GET | `/api/milestones/:id/metadata` | `{ receiptUrl, notes }` |
-| PUT | `/api/milestones/:id/metadata` | body `{ receiptUrl?, notes? }` → upsert. (No auth in v1 — note it in the demo as Future Scope) |
+| GET | `/api/health` | `{ ok, chainId, contract, contractConfigured, lastIndexedBlock }` |
+| GET | `/api/stats` | platform-wide `{ totalDonated, totalReleased, balance, donorCount, milestoneCount, orgCount }` |
+| GET | `/api/donors/top?limit=10` | platform-wide `[{ donor, total }]` |
+| GET | `/api/orgs` | all orgs, each with a `stats` object |
+| GET | `/api/orgs/:orgId` | one org + stats |
+| GET | `/api/orgs/:orgId/stats` | per-org stats |
+| GET | `/api/orgs/:orgId/donations?limit=50` | latest donations with messages + tx hashes |
+| GET | `/api/orgs/:orgId/donors/top?limit=10` | per-org leaderboard |
+| GET | `/api/orgs/:orgId/milestones` | milestones joined with metadata |
+| GET | `/api/orgs/:orgId/milestones/:id/metadata` | `{ receiptUrl, notes }` |
+| PUT | `/api/orgs/:orgId/milestones/:id/metadata` | body `{ receiptUrl?, notes? }` → upsert. **No auth in v1** — future: org owner signs a message, verify against `Org.owner` |
 
-All responses: `{ data: ... }` or `{ error: string }`.
+All responses: `{ data: ... }` or `{ error: string }`. Aggregation lives in `src/lib/aggregate.ts`.
 
 ## Indexer (`services/indexer.ts`)
 
@@ -76,7 +81,7 @@ All responses: `{ data: ... }` or `{ error: string }`.
 loop every INDEXER_POLL_MS (default 10s):
   from = IndexerState.lastBlock + 1  (or CONTRACT_DEPLOY_BLOCK on first run)
   to   = latest block
-  for each event type (Donated, MilestoneRequested, MilestoneApproved, MilestoneReleased):
+  for each event (OrgCreated, OrgUpdated, Donated, MilestoneRequested, MilestoneApproved, MilestoneReleased):
       logs = publicClient.getLogs({ address, event, fromBlock, toBlock })
       upsert rows
   IndexerState.lastBlock = to

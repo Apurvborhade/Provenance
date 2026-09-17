@@ -15,7 +15,7 @@
 ## React
 - Function components, hooks only.
 - Presentational components (`components/ui/*`, `MilestoneTable`, `StatsBar`, `TxHistory`) take props and **never import wagmi**.
-- Container components (`DonateForm`, `OrgPanel`, `ConnectButton`) own hooks.
+- Container components (`DonateForm`, `CreateOrgForm`, `ManagePanel`, `ConnectButton`) own hooks.
 - Pages compose containers + presentational components.
 
 ## Solidity

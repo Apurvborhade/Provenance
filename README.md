@@ -1,20 +1,20 @@
 # Provenance — Transparent Donation Tracking (Hack2Ignite WB-05)
 
-On-chain donation + milestone-based fund release tracker. Every donation, milestone request, approval and release is an on-chain event on **Base Sepolia**, and the dashboard reads directly from the contract so nothing shown is "claimed" — it's all verifiable on Basescan.
+Multi-organisation on-chain donation + milestone-based fund release tracker. Any NGO registers an org; donors give ETH with a message; the org requests spend milestones, the platform admin approves, the org releases. Every donation, milestone request, approval and release is an on-chain event on **Base Sepolia**, and the dashboard reads directly from the contract so nothing shown is "claimed" — it's all verifiable on Basescan.
 
 ## Repo layout
 
 ```
 Provenance/
 ├── docs/        # 📖 START HERE — architecture, task split, build plan, demo script
-├── contracts/   # Foundry — DonationTracker.sol + tests + deploy script
+├── contracts/   # Foundry — DonationPlatform.sol + tests + deploy script
 ├── frontend/    # Vite + React + TypeScript + wagmi/viem
 └── backend/     # Express + TypeScript + Prisma (optional indexer / metadata API)
 ```
 
 ## Deployed contract
 
-**Base Sepolia:** [`0x6Dba6ab5d89E854045F05C736bA52FD0Bf0AAF4b`](https://sepolia.basescan.org/address/0x6Dba6ab5d89E854045F05C736bA52FD0Bf0AAF4b) — full details in [`DEPLOYMENTS.md`](DEPLOYMENTS.md).
+**Base Sepolia:** `DonationPlatform` — ⏳ pending redeploy after the multi-org upgrade. See [`DEPLOYMENTS.md`](DEPLOYMENTS.md).
 
 ## Team
 

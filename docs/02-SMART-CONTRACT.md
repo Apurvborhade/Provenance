@@ -1,105 +1,88 @@
-# 02 — Smart Contract: `DonationTracker.sol`
+# 02 — Smart Contract: `DonationPlatform.sol`
 
-**Owner:** Apurva · **Location:** `contracts/src/DonationTracker.sol` · **Solidity:** `^0.8.24` · **Framework:** Foundry
+**Owner:** Apurva · **Location:** `contracts/src/DonationPlatform.sol` · **Solidity:** `^0.8.24` · **Framework:** Foundry
 
 ## Purpose
 
-Hold donated ETH in escrow and release it only against explicitly recorded, owner-approved milestones. Emit an event for every state change so the full history is reconstructable from logs.
+One contract hosting **many organisations**. Donors give ETH to a specific org; funds sit in escrow per org and are released only against milestones that the org owner records and the platform admin approves. Every state change emits an event, so the full history of every org is reconstructable from logs.
+
+## Roles
+
+| Role | Who | Can |
+|---|---|---|
+| **Admin** | Deployer (`admin`, immutable) | `approveMilestone` for any org |
+| **Org owner** | Whoever called `createOrg` | `updateOrg`, `addMilestone`, `releaseMilestone` for *their* org |
+| **Donor** | Anyone | `donate(orgId, message)` |
+| **Public** | Anyone | All view functions |
+
+Separation of duties: the org can't approve its own spend; the admin can't pull funds out. In the single-wallet demo the same wallet is both admin and org owner — the UI shows both pills.
 
 ## State
 
-| Name | Type | Meaning |
-|---|---|---|
-| `owner` | `address` | Org / admin wallet. Set in constructor to `msg.sender`. Immutable in v1. |
-| `donations` | `mapping(address => uint256)` | Cumulative amount donated per address |
-| `totalDonated` | `uint256` | Lifetime sum of all donations (never decreases) |
-| `totalReleased` | `uint256` | Lifetime sum released via milestones |
-| `milestones` | `Milestone[]` | Ordered list; index = milestone id |
-
 ```solidity
+struct Org {
+    address owner;
+    string  name;
+    string  description;
+    uint256 totalDonated;   // lifetime
+    uint256 totalReleased;  // lifetime
+    uint256 balance;        // currently escrowed for this org
+    uint256 donorCount;     // unique donors
+    uint256 createdAt;
+}
+
 struct Milestone {
-    string  description;   // "Purchased 50 textbooks"
-    uint256 amount;        // wei
+    string  description;
+    uint256 amount;         // wei
     bool    approved;
     bool    released;
-    uint256 createdAt;     // block.timestamp
-    uint256 releasedAt;    // 0 until released
+    uint256 createdAt;
+    uint256 releasedAt;     // 0 until released
 }
+
+address public immutable admin;
+uint256 public totalDonated;    // platform-wide
+uint256 public totalReleased;   // platform-wide
+Org[] private _orgs;                                        // index = orgId
+mapping(uint256 orgId => Milestone[]) private _milestones;  // index = milestoneId (scoped per org)
+mapping(uint256 orgId => mapping(address => uint256)) public donations;
 ```
 
-Current escrow balance = `address(this).balance` (also exposed as `getBalance()` for convenience). Invariant: `balance == totalDonated - totalReleased`.
+**Invariant:** `address(this).balance == Σ org.balance == totalDonated − totalReleased`. Tested.
 
 ## Functions
 
-| Signature | Access | Effect | Emits |
-|---|---|---|---|
-| `donate() payable` | anyone | `require(msg.value > 0)`; `donations[msg.sender] += value`; `totalDonated += value` | `Donated(donor, amount, timestamp)` |
-| `receive() payable` | anyone | Same as `donate()` — so plain ETH transfers count too | `Donated` |
-| `addMilestone(string description, uint256 amount)` | onlyOwner | `require(amount > 0)`, `require(bytes(description).length > 0)`; push; returns id | `MilestoneRequested(id, description, amount)` |
-| `approveMilestone(uint256 id)` | onlyOwner | `require(!approved)`; set approved | `MilestoneApproved(id)` |
-| `releaseMilestone(uint256 id)` | onlyOwner | `require(approved && !released)`; `require(balance >= amount)`; set released; `totalReleased += amount`; transfer to owner via `call` | `MilestoneReleased(id, amount, timestamp)` |
-| `getMilestones() view returns (Milestone[])` | anyone | Whole array for the dashboard | — |
-| `getMilestoneCount() view returns (uint256)` | anyone | | — |
-| `getBalance() view returns (uint256)` | anyone | `address(this).balance` | — |
+| Signature | Access | Emits |
+|---|---|---|
+| `createOrg(string name, string description) → orgId` | anyone | `OrgCreated(orgId, owner, name, description)` |
+| `updateOrg(orgId, name, description)` | org owner | `OrgUpdated(orgId, name, description)` |
+| `donate(orgId, string message) payable` | anyone | `Donated(orgId, donor, amount, message, timestamp)` |
+| `addMilestone(orgId, description, amount) → milestoneId` | org owner | `MilestoneRequested(orgId, milestoneId, description, amount)` |
+| `approveMilestone(orgId, milestoneId)` | **admin** | `MilestoneApproved(orgId, milestoneId)` |
+| `releaseMilestone(orgId, milestoneId)` | org owner | `MilestoneReleased(orgId, milestoneId, amount, timestamp)` — ETH → org owner |
+| `getOrgs() → Org[]`, `getOrg(id)`, `getOrgCount()` | view | |
+| `getMilestones(orgId) → Milestone[]`, `getMilestone(orgId, id)`, `getMilestoneCount(orgId)` | view | |
+| `getBalance()` | view | total escrowed across all orgs |
+| `receive()` | — | **reverts** `DirectTransferNotAllowed` — ETH must go through `donate` so it's attributed to an org |
 
-## Events
+`orgId` and `milestoneId` are `indexed` in every event so the frontend/indexer can filter logs per org cheaply.
 
-```solidity
-event Donated(address indexed donor, uint256 amount, uint256 timestamp);
-event MilestoneRequested(uint256 indexed id, string description, uint256 amount);
-event MilestoneApproved(uint256 indexed id);
-event MilestoneReleased(uint256 indexed id, uint256 amount, uint256 timestamp);
-```
+## Errors
 
-`indexed` on `donor` and `id` lets the frontend/backend filter logs cheaply.
+`NotAdmin`, `NotOrgOwner`, `InvalidOrg`, `EmptyName`, `ZeroAmount`, `EmptyDescription`, `InvalidMilestone`, `AlreadyApproved`, `NotApproved`, `AlreadyReleased`, `InsufficientBalance` (org's balance, not the contract's), `TransferFailed`, `DirectTransferNotAllowed`.
 
-## Errors (custom errors, cheaper than strings)
+## Security notes
 
-```solidity
-error NotOwner();
-error ZeroAmount();
-error EmptyDescription();
-error InvalidMilestone();
-error AlreadyApproved();
-error NotApproved();
-error AlreadyReleased();
-error InsufficientBalance();
-error TransferFailed();
-```
+- Checks → effects → interactions in `releaseMilestone`; `released` and `balance` updated before the `call`.
+- `InsufficientBalance` checks the **org's** balance, so org A can never spend org B's donations (tested).
+- `call{value:}` not `transfer`.
+- Admin and org owners are immutable-ish by design (no ownership transfer in v1).
 
-## Security notes (keep simple, but not sloppy)
+## Test plan (`contracts/test/DonationPlatform.t.sol` — 26 tests)
 
-- Checks-effects-interactions in `releaseMilestone`: mark released **before** the external `call`.
-- Use `call{value:}` not `transfer` (gas-stipend safe).
-- No reentrancy guard needed because state is updated first and only owner can call, but the pattern is still followed.
-- Owner cannot be changed in v1 — deliberate; fewer things to test.
-
-## Test plan (`contracts/test/DonationTracker.t.sol`)
-
-| Test | Asserts |
-|---|---|
-| `test_Donate` | balance, `donations[donor]`, `totalDonated`, event emitted |
-| `test_DonateViaReceive` | plain `call{value}` counts as donation |
-| `test_RevertDonateZero` | `ZeroAmount` |
-| `test_AddMilestone` | id 0, fields set, event |
-| `test_RevertAddMilestoneNotOwner` | `NotOwner` |
-| `test_ApproveMilestone` | approved flag, event |
-| `test_RevertApproveTwice` | `AlreadyApproved` |
-| `test_ReleaseMilestone` | owner balance up, contract balance down, `totalReleased`, released flag, event |
-| `test_RevertReleaseNotApproved` | `NotApproved` |
-| `test_RevertReleaseTwice` | `AlreadyReleased` |
-| `test_RevertReleaseInsufficientBalance` | `InsufficientBalance` |
-| `test_Invariant_BalanceEqualsDonatedMinusReleased` | after a sequence of ops |
+Orgs: create, multiple orgs (same wallet can own several), empty name, update, update-not-owner, invalid org.
+Donate: basic + event, unique donor count, per-org isolation, zero amount, direct transfer rejected.
+Milestones: add, ids scoped per org, not-owner (incl. admin can't add), bad input, approve, approve-not-admin (owner can't self-approve), approve twice, invalid id, release, release-not-approved, release twice, release-not-owner (admin can't release), insufficient **org** balance while contract is rich.
+Invariants: contract balance == Σ org balances; fuzz donate.
 
 Run: `cd contracts && forge test -vvv`
-
-## Deploy & verify
-
-See `08-SETUP.md`. Short version:
-
-```bash
-cd contracts
-forge script script/Deploy.s.sol:Deploy --rpc-url base_sepolia --broadcast --verify -vvvv
-```
-
-Output address → `frontend/src/config/contract.ts` and `backend/.env`.

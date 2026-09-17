@@ -1,5 +1,18 @@
 # Deployments
 
+## Current: DonationPlatform (multi-org) — ⏳ NOT YET DEPLOYED
+
+Redeploy needed — the contract changed from `DonationTracker` to `DonationPlatform`. Run:
+
+```bash
+cd contracts && source .env
+forge script script/Deploy.s.sol:Deploy --rpc-url base_sepolia --account provenance --broadcast --verify --etherscan-api-key $ETHERSCAN_API_KEY -vvvv
+```
+
+Then update `frontend/src/config/contract.ts` (`DONATION_PLATFORM_ADDRESS`, `DONATION_PLATFORM_DEPLOY_BLOCK`), `backend/.env` + `.env.example`, and the table below.
+
+## Previous: DonationTracker (single-org, superseded)
+
 | Network | Contract | Address | Deploy block | Owner | Verified |
 |---|---|---|---|---|---|
 | Base Sepolia (84532) | DonationTracker | [`0x6Dba6ab5d89E854045F05C736bA52FD0Bf0AAF4b`](https://sepolia.basescan.org/address/0x6Dba6ab5d89E854045F05C736bA52FD0Bf0AAF4b) | 46945949 | [`0x4ec137a8BE0466C166997BCfc56FFDafc542201B`](https://sepolia.basescan.org/address/0x4ec137a8BE0466C166997BCfc56FFDafc542201B) | ✅ [verified](https://sepolia.basescan.org/address/0x6Dba6ab5d89E854045F05C736bA52FD0Bf0AAF4b#code) |
@@ -19,7 +32,7 @@
 
 ```bash
 cd contracts
-forge verify-contract 0x6Dba6ab5d89E854045F05C736bA52FD0Bf0AAF4b src/DonationTracker.sol:DonationTracker \
+forge verify-contract <ADDRESS> src/DonationPlatform.sol:DonationPlatform \
   --chain base-sepolia --etherscan-api-key $ETHERSCAN_API_KEY --watch
 ```
 

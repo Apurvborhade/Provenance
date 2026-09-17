@@ -11,38 +11,41 @@
 ### 1. Solution (20 s) — slide 2
 > "Provenance puts the donation *and* the spending on-chain. The org can't spend without publicly recording a milestone, and every step is a transaction anyone can check."
 
-### 2. Show the empty/live dashboard (20 s) — switch to browser
-- Point at the header: **"Reading live from Base Sepolia — contract 0x…"** → click it → Basescan shows **verified source**.
-> "There's no database behind this page. Every number is read from the contract right now."
+### 2. Show the live directory (20 s) — switch to browser
+- Home page: platform totals + org cards. Point at **"Reading live from Base Sepolia — contract 0x…"** → click → Basescan shows **verified source**.
+> "Any NGO can register here. There's no database behind this page — every number is read from the contract right now."
 
-### 3. Donate live (45 s)
-- Tab **Donate** → Connect wallet → enter `0.01` → **Donate** → confirm in MetaMask
-- Button goes `Confirming…` → `Done ✓`
-- Tab **Dashboard** → Total Donated + Balance tick up → new row in History → click tx link → Basescan
-> "That's my donation, on-chain, timestamped, from my address. I don't need to trust the org's ledger."
+### 3. Create an org live (30 s) — *skip if short on time; pre-created orgs are fine*
+- **+ Create organisation** → name + one-line description → confirm → lands on the new org page.
+> "That's a real on-chain registration. The wallet that created it is the only one that can ever request funds."
 
-### 4. Org records a milestone (40 s)
-- Tab **Org** (same wallet is owner) → description `Purchased 50 textbooks` → amount `0.005` → **Add milestone**
-- Dashboard → row appears with **Pending** badge
-> "The org can't just withdraw. It has to publicly say what the money is for."
+### 4. Donate live (45 s)
+- Org page → **Donate** tab → `0.01` + message `For the kids` → confirm in MetaMask
+- **Overview** → Raised + In escrow tick up → History shows the donation *with the message* → click tx link → Basescan
+> "My donation, my message, my address, timestamped. I don't need to trust the org's ledger."
 
-### 5. Approve & release (45 s)
-- Org → **Approve** → badge **Approved**
-- Org → **Release** → badge **Released**, Balance drops by 0.005, Total Released goes up
-- Click the release tx link → Basescan shows ETH going to the org wallet
-> "Milestone, amount, timestamp, destination — all in the transaction. Not a PDF, not a claim."
+### 5. Org requests a milestone (30 s)
+- **Manage** tab (wallet is org owner) → `Purchased 50 textbooks` / `0.005` → **Add milestone** → **Pending**
+> "The org can't just withdraw. It has to publicly say what the money is for — and it can't approve itself."
 
-### 6. Reload (10 s)
+### 6. Admin approves, org releases (45 s)
+- Same wallet is also platform admin in the single-wallet demo (both pills show) → **Approve** → **Approved**
+- **Release** → **Released**, In escrow drops by 0.005, Released goes up → click release tx → ETH to org wallet
+> "Milestone, amount, approver, timestamp, destination — all in the transactions. Not a PDF, not a claim."
+
+*(With two wallets: switch MetaMask account between steps 5 and 6 to show that the org owner literally cannot approve.)*
+
+### 7. Reload (10 s)
 - Hit refresh → identical state.
 > "Nothing was stored in the browser. Close it, come back tomorrow, it's the same — because it's the chain."
 
-### 7. Future scope (20 s) — slide 3
-- Multi-approver / DAO instead of single admin
+### 8. Future scope (20 s) — slide 3
+- Multi-approver / DAO instead of single platform admin
 - IPFS receipts hashed on-chain
-- Factory for many NGOs
+- Org reputation: % of raised funds released against milestones, on-chain
 - (Backend already scaffolded: indexer + metadata API for receipts and analytics)
 
-### 8. Close (10 s)
+### 9. Close (10 s)
 > "Everything you watched is independently verifiable. Nobody has to take our word for it."
 
 ---

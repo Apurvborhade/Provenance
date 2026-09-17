@@ -16,34 +16,36 @@ A minimal on-chain donation tracker where **every donation, milestone and fund r
 
 | # | Action | Who | On-chain call |
 |---|---|---|---|
-| 1 | **Donate** | Anyone with a wallet | `donate()` payable |
-| 2 | **Request release** | Org (owner wallet) | `addMilestone(description, amount)` |
-| 3 | **Approve & release** | Admin (owner wallet) | `approveMilestone(id)` then `releaseMilestone(id)` |
-| 4 | **Verify** | Anyone, no wallet needed | Dashboard reads `getMilestones()`, balance, and past events |
+| 0 | **Create org** | Anyone with a wallet | `createOrg(name, description)` |
+| 1 | **Donate** | Anyone with a wallet | `donate(orgId, message)` payable |
+| 2 | **Request release** | Org owner | `addMilestone(orgId, description, amount)` |
+| 3 | **Approve** | Platform admin | `approveMilestone(orgId, id)` |
+| 4 | **Release** | Org owner | `releaseMilestone(orgId, id)` |
+| 5 | **Verify** | Anyone, no wallet needed | Dashboard reads `getOrgs()`, `getMilestones(orgId)`, and past events |
 
 ## Scope — what we ARE building
 
-- One `DonationTracker.sol` contract deployed + verified on **Base Sepolia**
-- React dashboard: connect wallet, donate, org panel (add/approve/release), public verification table
+- One `DonationPlatform.sol` contract (many orgs) deployed + verified on **Base Sepolia**
+- React app: org directory, create org, per-org page with donate (with message) / manage (role-aware) / public verification
 - Every row in the UI links to its transaction on Basescan
 - **Optional** Express + Prisma backend that caches events and stores off-chain milestone metadata (receipt URLs, notes). The demo must work **without** the backend running.
 
 ## Non-goals (explicitly out of scope for the hackathon)
 
-- Multi-sig / DAO approval
+- Multi-sig / DAO approval (single platform admin approves for now)
 - IPFS receipts
-- Multiple organisations / factory contract
 - Mainnet deployment
 - Auth, user accounts, KYC
 - Fiat on-ramp
 
 ## Roles in the demo
 
-Single-wallet demo: the same connected wallet acts as donor, org and admin. The UI shows the org panel only when `connectedAddress === owner()`. If two wallets are available, use one as donor and one as owner to make it clearer.
+Three roles: **donor** (anyone), **org owner** (whoever created the org — requests & releases), **platform admin** (deployer — approves). In a single-wallet demo the deployer creates an org, so the same wallet is both owner and admin and the Manage tab shows both sets of buttons. With two wallets: deployer = admin, second wallet = org owner — much clearer.
 
 ## Success criteria for judging
 
-1. Live testnet donation → balance updates on dashboard → tx link opens on Basescan
-2. Milestone added → shows as `Pending` → approved → `Approved` → released → `Released`, balance drops
-3. Contract source is verified on Basescan (judges can read it)
-4. Page reloads and shows the same state (it's read from chain, not local state)
+1. Create an org live → appears in the directory
+2. Live testnet donation with a message → org balance updates → tx link opens on Basescan
+3. Milestone added → `Pending` → admin approves → `Approved` → owner releases → `Released`, balance drops
+4. Contract source is verified on Basescan (judges can read it)
+5. Page reloads and shows the same state (it's read from chain, not local state)

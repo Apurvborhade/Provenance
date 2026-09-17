@@ -6,7 +6,7 @@ Read in order. Each doc is self-contained enough for an AI agent or a new teamma
 |---|---|---|
 | 00 | [Overview](00-OVERVIEW.md) | Problem statement, solution, scope, non-goals |
 | 01 | [Architecture](01-ARCHITECTURE.md) | System diagram, data flow, why no-backend-required, where the backend fits |
-| 02 | [Smart Contract](02-SMART-CONTRACT.md) | `DonationTracker.sol` spec — state, functions, events, invariants, test plan |
+| 02 | [Smart Contract](02-SMART-CONTRACT.md) | `DonationPlatform.sol` spec — state, functions, events, invariants, test plan |
 | 03 | [Frontend](03-FRONTEND.md) | React app structure, wagmi setup, pages, components, hooks |
 | 04 | [Backend](04-BACKEND.md) | Express + Prisma — what it's for, REST endpoints, schema, indexer |
 | 05 | [Task Split](05-TASK-SPLIT.md) | **Who does what** — Apurva (core Web3) vs Aditya (non-Web3) |

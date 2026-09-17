@@ -43,17 +43,17 @@ forge script script/Deploy.s.sol:Deploy \
 If `--verify` fails, verify separately:
 
 ```bash
-forge verify-contract <ADDRESS> src/DonationTracker.sol:DonationTracker \
+forge verify-contract <ADDRESS> src/DonationPlatform.sol:DonationPlatform \
   --chain base-sepolia --etherscan-api-key $ETHERSCAN_API_KEY --watch
 ```
 
 Grab the ABI:
 
 ```bash
-jq '.abi' out/DonationTracker.sol/DonationTracker.json
+jq '.abi' out/DonationPlatform.sol/DonationPlatform.json
 ```
 
-Paste into `frontend/src/config/contract.ts` (`DONATION_TRACKER_ABI`) and set `DONATION_TRACKER_ADDRESS`.
+Paste into `frontend/src/config/contract.ts` (`DONATION_PLATFORM_ABI`) and set `DONATION_PLATFORM_ADDRESS`.
 
 ## 2. Frontend (both)
 

@@ -12,8 +12,8 @@ The interface between the two lanes is **plain TypeScript props/types** (`fronte
 ## 🟣 Apurva — Core Web3
 
 ### A1. Smart contract (contracts/)
-- [ ] Implement `src/DonationTracker.sol` per `02-SMART-CONTRACT.md` (skeleton already in repo)
-- [ ] Write `test/DonationTracker.t.sol` — all 12 tests in the test plan pass
+- [x] Implement `src/DonationPlatform.sol` per `02-SMART-CONTRACT.md` (multi-org, admin approves)
+- [x] `test/DonationPlatform.t.sol` — 26 tests pass
 - [ ] `forge fmt`, `forge build` clean, no warnings
 - [ ] Gas-snapshot once (`forge snapshot`) just to have it in the repo
 
@@ -23,24 +23,24 @@ The interface between the two lanes is **plain TypeScript props/types** (`fronte
 - [ ] Confirm "Contract Source Code Verified" on Basescan
 - [ ] Paste address + ABI into `frontend/src/config/contract.ts`
 - [ ] Paste address + deploy block into `backend/.env.example` and tell Aditya
-- [ ] Do one real `donate()` and one full milestone cycle via Basescan "Write Contract" so there's seed data on-chain
+- [ ] Seed on-chain: create 2 orgs, donate to each with a message, run one full milestone cycle — so the directory isn't empty at demo time
 
 ### A3. Frontend chain wiring (frontend/src/config + hooks)
 - [ ] `config/wagmi.ts` — baseSepolia, injected connector, http transport
 - [ ] `main.tsx` — WagmiProvider + QueryClientProvider
-- [ ] `hooks/useDonationTracker.ts` — owner, totalDonated, balance, milestones (mapped to `Milestone[]` type), `isOwner`
-- [ ] `hooks/useDonate.ts` — write + wait for receipt, expose `{ donate, hash, isPending, isConfirming, isSuccess, error }`
-- [ ] `hooks/useMilestoneActions.ts` — add / approve / release, same shape
-- [ ] `hooks/useTxHistory.ts` — `getLogs` for the 4 events from deploy block → `HistoryItem[]`, sorted desc
-- [ ] `useWatchContractEvent` on all 4 events → invalidate queries
+- [x] `hooks/usePlatform.ts` — admin, orgs[], platform stats, `isAdmin`, event watchers
+- [x] `hooks/useOrg.ts` — org, milestones[], `isOrgOwner`, notFound
+- [x] `hooks/useCreateOrg.ts` — createOrg/updateOrg, `createdOrgId` decoded from receipt
+- [x] `hooks/useDonate.ts` — donate(orgId, amount, message)
+- [x] `hooks/useMilestoneActions.ts` — add / approve / release scoped to orgId
+- [x] `hooks/useTxHistory.ts` — `getLogs` for all events, optional orgId filter
+- [ ] **Test every hook against a real wallet** — none of the above has been exercised with MetaMask yet
 - [ ] Wrong-network detection + `useSwitchChain` button
 
 ### A4. Wire hooks into Aditya's components
-- [ ] `ConnectButton.tsx` (useConnect / useDisconnect / useAccount)
-- [ ] `DonateForm.tsx` — calls `useDonate`, passes states to Aditya's `<Button>` / `<Toast>`
-- [ ] `OrgPanel.tsx` — gated on `isOwner`, calls `useMilestoneActions`
-- [ ] Replace `mock.ts` imports in pages with real hooks
-- [ ] End-to-end on testnet: donate → add → approve → release → reload page → state persists
+- [x] `ConnectButton.tsx`, `DonateForm.tsx`, `CreateOrgForm.tsx`, `ManagePanel.tsx` wired
+- [ ] End-to-end on testnet: create org → donate → add → approve → release → reload → state persists
+- [ ] Two-wallet test: deployer approves, second wallet owns the org — confirm the Manage tab shows the right buttons for each
 
 ### A5. Indexer snippet for backend
 - [ ] Give Aditya `backend/src/lib/viem.ts` + the `parseAbiItem` event definitions (already scaffolded — just confirm they match the final ABI)
@@ -59,11 +59,11 @@ The interface between the two lanes is **plain TypeScript props/types** (`fronte
 - [ ] No wagmi imports anywhere in `ui/`
 
 ### B2. Frontend data components (props in, JSX out)
-- [ ] `StatsBar.tsx` — 4 tiles: Total Donated, Current Balance, Total Released, Milestones. Props are `bigint` wei → use `formatEth`
-- [ ] `MilestoneTable.tsx` — columns: #, Description, Amount, Status badge, Created, Actions slot (render-prop so Apurva can inject Approve/Release buttons), tx link
-- [ ] `TxHistory.tsx` — unified event list, newest first, each row links to Basescan via `txUrl`
-- [ ] Empty states, skeleton loaders, error banner component
-- [ ] Build all of the above against `lib/mock.ts` in `DashboardPage.tsx` first
+- [x] `StatsBar.tsx` (takes `StatTile[]`), `MilestoneTable.tsx`, `TxHistory.tsx` (donor messages, org column), `OrgCard.tsx`, `OrgList.tsx` — baseline versions exist
+- [ ] Polish `OrgCard` — progress feel (raised vs released), truncation, hover
+- [ ] Donor leaderboard widget on `OrgPage` (data from `api.topDonors(orgId)`, hide if backend down)
+- [ ] Skeleton loaders instead of spinner text; nicer empty states
+- [ ] Run everything with `VITE_USE_MOCK=true` — 3 mock orgs are in `lib/mock.ts`
 
 ### B3. Frontend utilities (frontend/src/lib/)
 - [ ] `format.ts` — `formatEth(wei: bigint, decimals=4)`, `shortAddr`, `txUrl`, `addrUrl`, `formatDate(unix)`, `timeAgo`
@@ -72,18 +72,16 @@ The interface between the two lanes is **plain TypeScript props/types** (`fronte
 - [ ] `api.ts` — typed fetch helpers for backend, each returns `null` on failure
 
 ### B4. App shell & pages
-- [ ] `App.tsx` — header (logo, network pill, `<ConnectButton />` slot), 3 tabs: Dashboard / Donate / Org
-- [ ] `DashboardPage`, `DonatePage`, `OrgPage` layouts
-- [ ] "Verify on Basescan" banner with the contract address link at the top of Dashboard
+- [x] `App.tsx` shell + hash router; `HomePage`, `CreateOrgPage`, `OrgPage` — baseline versions exist
+- [ ] Responsive pass at 400px for the org grid and the org header
+- [ ] "Verify on Basescan" banner styling
 - [ ] Footer: "All data read live from Base Sepolia · nothing is self-reported"
 
 ### B5. Backend (backend/)
-- [ ] `prisma/schema.prisma` per `04-BACKEND.md`, `pnpm prisma:push` works
-- [ ] `src/index.ts` express app, cors, json, error handler
-- [ ] `routes/health.ts`, `routes/stats.ts`, `routes/donations.ts`, `routes/milestones.ts` with zod validation
-- [ ] `services/indexer.ts` — loop + upserts (Apurva's viem client + event defs are already in `lib/viem.ts`)
-- [ ] Seed script `prisma/seed.ts` with fake data so endpoints return something before the contract is deployed
-- [ ] Manual test with `curl` / a `.http` file; put example requests in `backend/README.md`
+- [x] Prisma schema (Org, Donation, Milestone keyed by (orgId,id), Metadata), routes, indexer, seed — baseline exists and is smoke-tested
+- [ ] Run the indexer against the deployed contract once there's on-chain activity; confirm rows match Basescan
+- [ ] `GET /api/orgs/:orgId/activity` — unified event feed (donations + milestone steps) so the frontend can fall back to the API when `getLogs` is slow
+- [ ] Basic auth for `PUT metadata`: accept `{ signature, message }`, verify with `viem.verifyMessage` against `Org.owner`
 
 ### B6. Docs, demo & polish
 - [ ] Slides: Problem → Solution → Architecture diagram → Live demo → Future scope (5–6 slides max)
