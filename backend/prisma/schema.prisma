@@ -9,43 +9,70 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/// Mirrors an on-chain org (OrgCreated / OrgUpdated events).
+model Org {
+  id           Int      @id            // on-chain orgId
+  owner        String
+  name         String
+  description  String
+  createdAt    Int                     // unix seconds (block timestamp)
+  createTxHash String
+  updatedAt    DateTime @updatedAt
+
+  donations  Donation[]
+  milestones Milestone[]
+}
+
 /// One row per Donated event. Amounts are wei as strings (no 256-bit ints in SQLite / JS number).
 model Donation {
   txHash      String   @id
   logIndex    Int
+  orgId       Int
   donor       String
   amount      String
+  message     String   @default("")
   blockNumber Int
   timestamp   Int
   createdAt   DateTime @default(now())
 
+  org Org @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([orgId])
   @@index([donor])
   @@index([blockNumber])
 }
 
-/// Mirrors on-chain milestone + the tx hash for each lifecycle step.
+/// Mirrors an on-chain milestone + the tx hash for each lifecycle step. Ids are scoped per org.
 model Milestone {
-  id            Int      @id            // on-chain milestone id
+  orgId         Int
+  id            Int                     // on-chain milestoneId (per org)
   description   String
   amount        String                  // wei
   status        String   @default("pending") // pending | approved | released
-  createdAt     Int                     // unix seconds (from block timestamp)
+  createdAt     Int                     // unix seconds (block timestamp)
   releasedAt    Int?
   requestTxHash String
   approveTxHash String?
   releaseTxHash String?
   updatedAt     DateTime @updatedAt
 
+  org      Org                @relation(fields: [orgId], references: [id], onDelete: Cascade)
   metadata MilestoneMetadata?
+
+  @@id([orgId, id])
 }
 
 /// Off-chain only: receipt links / notes attached by the org.
 model MilestoneMetadata {
-  milestoneId Int       @id
+  orgId       Int
+  milestoneId Int
   receiptUrl  String?
   notes       String?
-  updatedAt   DateTime  @updatedAt
-  milestone   Milestone @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
+  updatedAt   DateTime @updatedAt
+
+  milestone Milestone @relation(fields: [orgId, milestoneId], references: [orgId, id], onDelete: Cascade)
+
+  @@id([orgId, milestoneId])
 }
 
 /// Single-row cursor so the indexer resumes where it left off.

@@ -23,12 +23,15 @@ curl -s -X PUT localhost:4000/api/milestones/0/metadata -H 'content-type: applic
 | Method | Path |
 |---|---|
 | GET | `/api/health` |
-| GET | `/api/stats` |
-| GET | `/api/donations?limit=50` |
-| GET | `/api/donors/top?limit=10` |
-| GET | `/api/milestones` |
-| GET | `/api/milestones/:id` |
-| GET | `/api/milestones/:id/metadata` |
-| PUT | `/api/milestones/:id/metadata` |
+| GET | `/api/stats` — platform-wide |
+| GET | `/api/donors/top?limit=10` — platform-wide |
+| GET | `/api/orgs` — directory with per-org stats |
+| GET | `/api/orgs/:orgId` |
+| GET | `/api/orgs/:orgId/stats` |
+| GET | `/api/orgs/:orgId/donations?limit=50` |
+| GET | `/api/orgs/:orgId/donors/top?limit=10` |
+| GET | `/api/orgs/:orgId/milestones` |
+| GET | `/api/orgs/:orgId/milestones/:id/metadata` |
+| PUT | `/api/orgs/:orgId/milestones/:id/metadata` |
 
-Indexer: `src/services/indexer.ts` polls `getLogs` every `INDEXER_POLL_MS` from `CONTRACT_DEPLOY_BLOCK`, upserting rows. It stays idle until `CONTRACT_ADDRESS` is set.
+Indexer: `src/services/indexer.ts` polls `getLogs` every `INDEXER_POLL_MS` from `CONTRACT_DEPLOY_BLOCK`, upserting orgs, donations and milestones. It stays idle until `CONTRACT_ADDRESS` is set.

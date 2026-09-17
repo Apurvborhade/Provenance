@@ -1,6 +1,6 @@
 // Owner: Aditya (loop + upserts). Apurva owns lib/viem.ts (client + event ABI).
 import { prisma } from '../lib/prisma.js';
-import { publicClient, TRACKER_EVENTS_ABI } from '../lib/viem.js';
+import { publicClient, PLATFORM_EVENTS_ABI } from '../lib/viem.js';
 import { CONTRACT_ADDRESS, CONTRACT_CONFIGURED, env } from '../env.js';
 
 /** Public RPCs reject large eth_getLogs ranges. */
@@ -21,12 +21,12 @@ async function setCursor(block: number) {
 async function indexRange(fromBlock: bigint, toBlock: bigint) {
   const logs = await publicClient.getContractEvents({
     address: CONTRACT_ADDRESS,
-    abi: TRACKER_EVENTS_ABI,
+    abi: PLATFORM_EVENTS_ABI,
     fromBlock,
     toBlock,
   });
 
-  // Block timestamps for events that don't carry one (Requested/Approved).
+  // Block timestamps for events that don't carry one.
   const blockTs = new Map<bigint, number>();
   const tsFor = async (bn: bigint) => {
     if (!blockTs.has(bn)) {
@@ -39,16 +39,41 @@ async function indexRange(fromBlock: bigint, toBlock: bigint) {
   for (const log of logs) {
     const txHash = log.transactionHash;
     const blockNumber = Number(log.blockNumber);
+    const orgId = Number(log.args.orgId);
 
     switch (log.eventName) {
+      case 'OrgCreated':
+        await prisma.org.upsert({
+          where: { id: orgId },
+          create: {
+            id: orgId,
+            owner: log.args.owner!,
+            name: log.args.name!,
+            description: log.args.description ?? '',
+            createdAt: await tsFor(log.blockNumber),
+            createTxHash: txHash,
+          },
+          update: {},
+        });
+        break;
+
+      case 'OrgUpdated':
+        await prisma.org.updateMany({
+          where: { id: orgId },
+          data: { name: log.args.name!, description: log.args.description ?? '' },
+        });
+        break;
+
       case 'Donated':
         await prisma.donation.upsert({
           where: { txHash },
           create: {
             txHash,
             logIndex: log.logIndex,
+            orgId,
             donor: log.args.donor!,
             amount: log.args.amount!.toString(),
+            message: log.args.message ?? '',
             blockNumber,
             timestamp: Number(log.args.timestamp),
           },
@@ -57,10 +82,11 @@ async function indexRange(fromBlock: bigint, toBlock: bigint) {
         break;
 
       case 'MilestoneRequested': {
-        const id = Number(log.args.id);
+        const id = Number(log.args.milestoneId);
         await prisma.milestone.upsert({
-          where: { id },
+          where: { orgId_id: { orgId, id } },
           create: {
+            orgId,
             id,
             description: log.args.description!,
             amount: log.args.amount!.toString(),
@@ -73,23 +99,19 @@ async function indexRange(fromBlock: bigint, toBlock: bigint) {
         break;
       }
 
-      case 'MilestoneApproved': {
-        const id = Number(log.args.id);
+      case 'MilestoneApproved':
         await prisma.milestone.updateMany({
-          where: { id, status: 'pending' },
+          where: { orgId, id: Number(log.args.milestoneId), status: 'pending' },
           data: { status: 'approved', approveTxHash: txHash },
         });
         break;
-      }
 
-      case 'MilestoneReleased': {
-        const id = Number(log.args.id);
+      case 'MilestoneReleased':
         await prisma.milestone.updateMany({
-          where: { id },
+          where: { orgId, id: Number(log.args.milestoneId) },
           data: { status: 'released', releaseTxHash: txHash, releasedAt: Number(log.args.timestamp) },
         });
         break;
-      }
     }
   }
 

@@ -2,9 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import { env } from './env.js';
 import { healthRouter } from './routes/health.js';
-import { statsRouter } from './routes/stats.js';
-import { donationsRouter, donorsRouter } from './routes/donations.js';
-import { milestonesRouter } from './routes/milestones.js';
+import { statsRouter, donorsRouter } from './routes/stats.js';
+import { orgsRouter } from './routes/orgs.js';
 import { startIndexer, stopIndexer } from './services/indexer.js';
 import { prisma } from './lib/prisma.js';
 
@@ -14,9 +13,8 @@ app.use(express.json());
 
 app.use('/api/health', healthRouter);
 app.use('/api/stats', statsRouter);
-app.use('/api/donations', donationsRouter);
 app.use('/api/donors', donorsRouter);
-app.use('/api/milestones', milestonesRouter);
+app.use('/api/orgs', orgsRouter);
 
 app.use((_req, res) => res.status(404).json({ error: 'Not found' }));
 
