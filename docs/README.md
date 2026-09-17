@@ -15,3 +15,4 @@ Read in order. Each doc is self-contained enough for an AI agent or a new teamma
 | 08 | [Setup](08-SETUP.md) | Environment setup, env vars, faucets, deploy & verify commands |
 | 09 | [Conventions](09-CONVENTIONS.md) | Code style, git workflow, naming, how to hand off between people |
 | 10 | [Aditya's Status](10-ADITYA-STATUS.md) | What Aditya verified/fixed on a fresh clone, and what's still open on each side |
+| 11 | [Hosting](11-HOSTING.md) | Deploy frontend to Vercel, backend to Railway, env vars, gotchas |
