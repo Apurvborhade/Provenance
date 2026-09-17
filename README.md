@@ -14,7 +14,7 @@ Provenance/
 
 ## Deployed contract
 
-**Base Sepolia:** `DonationPlatform` — ⏳ pending redeploy after the multi-org upgrade. See [`DEPLOYMENTS.md`](DEPLOYMENTS.md).
+**Base Sepolia:** [`0x29df57C50BD4A3d4CCa3be83Bc376BDDf7353192`](https://sepolia.basescan.org/address/0x29df57C50BD4A3d4CCa3be83Bc376BDDf7353192) (verified) — full details in [`DEPLOYMENTS.md`](DEPLOYMENTS.md).
 
 ## Team
 
