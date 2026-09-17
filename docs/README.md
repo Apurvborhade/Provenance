@@ -14,3 +14,4 @@ Read in order. Each doc is self-contained enough for an AI agent or a new teamma
 | 07 | [Demo Script](07-DEMO-SCRIPT.md) | Exact demo flow, talking points, what to click |
 | 08 | [Setup](08-SETUP.md) | Environment setup, env vars, faucets, deploy & verify commands |
 | 09 | [Conventions](09-CONVENTIONS.md) | Code style, git workflow, naming, how to hand off between people |
+| 10 | [Aditya's Status](10-ADITYA-STATUS.md) | What Aditya verified/fixed on a fresh clone, and what's still open on each side |
