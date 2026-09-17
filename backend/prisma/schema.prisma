@@ -1,11 +1,11 @@
 // Owner: Aditya. Spec: docs/04-BACKEND.md
-// SQLite for zero-infra hackathon. To use Postgres: provider = "postgresql", DATABASE_URL=postgres://...
+// Postgres (Prisma Postgres). DATABASE_URL in .env — never commit it.
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 

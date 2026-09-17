@@ -3,7 +3,7 @@
 | Piece | Host | Why |
 |---|---|---|
 | `frontend/` | **Vercel** (free) | Static Vite build; hash router needs no rewrites |
-| `backend/` | **Railway** | Long-running Node process (indexer loop), persistent volume for SQLite + local-fallback receipts |
+| `backend/` | **Railway** | Long-running Node process (indexer loop). DB is hosted Postgres, receipts are on IPFS, so no volume is needed |
 | contract | Base Sepolia | already deployed + verified |
 
 Order matters: deploy the backend first (you need its URL for the frontend's `VITE_API_URL`).
@@ -15,9 +15,8 @@ npm i -g @railway/cli
 railway login                                  # opens browser
 cd backend
 railway init                                   # create a new project, name it "provenance-api"
-railway volume add --mount-path /app/data      # persistent disk for dev.db + uploads
 railway variables set \
-  DATABASE_URL="file:/app/data/dev.db" \
+  DATABASE_URL="<the Prisma Postgres URL from backend/.env>" \
   RPC_URL="https://sepolia.base.org" \
   CONTRACT_ADDRESS="0xd38Fa0f8932025b5a8F996b5DE76e0a8480D5280" \
   CONTRACT_DEPLOY_BLOCK="46956091" \
@@ -31,7 +30,7 @@ railway variables set PUBLIC_URL="https://<that domain>"
 
 `backend/railway.json` sets build/start; `start:prod` runs `prisma db push` then boots. Check: `curl https://<domain>/api/health` → `contractConfigured: true`, `receiptStorage: "ipfs"`.
 
-Alternative without CLI: railway.app → New Project → Deploy from GitHub → pick the repo → **Settings → Root Directory = `backend`** → add the variables above → add a Volume mounted at `/app/data`.
+Alternative without CLI: railway.app → New Project → Deploy from GitHub → pick the repo → **Settings → Root Directory = `backend`** → add the variables above.
 
 ## 2. Frontend → Vercel
 
@@ -60,5 +59,6 @@ Vite bakes `VITE_*` in at build time — after changing one, run `vercel --prod`
 
 - **CORS** is wide open (`cors()`), so any frontend origin can call the API. Fine for the hackathon.
 - **Railway sleeps?** No — Railway keeps the process up; the indexer keeps polling. Render's free tier sleeps after 15 min and would stall the indexer.
-- **Redeploying the contract** later = update `CONTRACT_ADDRESS` + `CONTRACT_DEPLOY_BLOCK` on Railway *and* `frontend/src/config/contract.ts` → `vercel --prod`. Also delete the Railway volume's `dev.db` (or set a new `DATABASE_URL` filename) so the indexer starts fresh.
+- **Redeploying the contract** later = update `CONTRACT_ADDRESS` + `CONTRACT_DEPLOY_BLOCK` on Railway *and* `frontend/src/config/contract.ts` → `vercel --prod`. Then clear the DB so the indexer starts fresh: `pnpm prisma db push --force-reset` (wipes all tables).
+- **Local dev and Railway share one Postgres.** Don't run two indexers against it at once — stop `pnpm dev` locally while the hosted one is up, or point local at a second database.
 - **Public RPC rate limits** hit harder on a public URL. If the receipt panel or history stalls, put an Alchemy Base Sepolia URL in `VITE_RPC_URL` and `RPC_URL`.

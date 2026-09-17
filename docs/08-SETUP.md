@@ -72,10 +72,10 @@ Build check: `pnpm build && pnpm preview`.
 ```bash
 cd backend
 pnpm install
-cp .env.example .env     # set CONTRACT_ADDRESS + CONTRACT_DEPLOY_BLOCK once deployed
+cp .env.example .env     # set DATABASE_URL, CONTRACT_ADDRESS, CONTRACT_DEPLOY_BLOCK, PINATA_JWT
 pnpm prisma:generate
-pnpm prisma:push         # creates prisma/dev.db
-pnpm seed                # optional fake data
+pnpm prisma:push         # applies schema to the Postgres DB in DATABASE_URL
+# pnpm seed              # only against a throwaway DB — it wipes tables
 pnpm dev                 # http://localhost:4000/api/health
 ```
 
@@ -99,7 +99,7 @@ VITE_API_URL=http://localhost:4000          # optional
 PORT=4000
 PINATA_JWT=                            # https://app.pinata.cloud/developers/api-keys — pins receipts to IPFS
 PUBLIC_URL=http://localhost:4000      # only for local-fallback receipt URIs
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://…?sslmode=require"   # Prisma Postgres URL — get it from Apurva, never commit
 RPC_URL=https://sepolia.base.org
 CONTRACT_ADDRESS=0x0000000000000000000000000000000000000000
 CONTRACT_DEPLOY_BLOCK=0

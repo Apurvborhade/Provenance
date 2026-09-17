@@ -28,7 +28,7 @@
  ┌────────────────────────┐            ┌────────────────────────┐
  │  frontend/  (React)    │  optional  │  backend/  (Express)   │
  │  - Connect wallet      │ ◄───────── │  - Indexer: events →   │
- │  - Donate              │   REST     │    Prisma (SQLite/PG)  │
+ │  - Donate              │   REST     │    Prisma (Postgres)   │
  │  - Org panel           │            │  - /api/stats          │
  │  - Public dashboard    │            │  - /api/milestones/:id │
  │  - Basescan links      │            │    /metadata (receipts)│

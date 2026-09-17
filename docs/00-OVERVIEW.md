@@ -29,7 +29,7 @@ A multi-org on-chain donation tracker where **every donation, milestone, release
 - One `DonationPlatform.sol` contract (many orgs) deployed + verified on **Base Sepolia**
 - React app: org directory, create org, per-org page with donate (with message) / manage (role-aware) / public verification
 - Every row in the UI links to its transaction on Basescan
-- **Optional** Express + Prisma backend that caches events and stores off-chain milestone metadata (receipt URLs, notes). The demo must work **without** the backend running.
+- Express + Prisma/Postgres backend that caches events, stores off-chain metadata, and pins receipts to IPFS. The dashboard works without it; attaching proof needs it.
 
 ## Non-goals (explicitly out of scope for the hackathon)
 

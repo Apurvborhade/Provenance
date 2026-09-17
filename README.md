@@ -9,7 +9,7 @@ Provenance/
 ├── docs/        # 📖 START HERE — architecture, task split, build plan, demo script
 ├── contracts/   # Foundry — DonationPlatform.sol + tests + deploy script
 ├── frontend/    # Vite + React + TypeScript + wagmi/viem
-└── backend/     # Express + TypeScript + Prisma (optional indexer / metadata API)
+└── backend/     # Express + TypeScript + Prisma/Postgres (indexer, metadata, IPFS receipts)
 ```
 
 ## Deployed contract
@@ -35,7 +35,8 @@ cd contracts && forge install && forge test
 cd frontend && pnpm install && cp .env.example .env && pnpm dev
 
 # 3. Backend (optional for the demo)
-cd backend && pnpm install && cp .env.example .env && pnpm prisma:push && pnpm dev
+cd backend && pnpm install && cp .env.example .env   # fill DATABASE_URL + PINATA_JWT
+pnpm prisma:push && pnpm dev
 ```
 
 Full setup instructions: [`docs/08-SETUP.md`](docs/08-SETUP.md)

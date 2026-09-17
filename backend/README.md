@@ -1,15 +1,15 @@
-# backend/ — Express + TypeScript + Prisma
+# backend/ — Express + TypeScript + Prisma (Postgres)
 
 Owner: **Aditya**. Spec: [`../docs/04-BACKEND.md`](../docs/04-BACKEND.md)
 
-Optional layer: caches chain events into SQLite and stores off-chain milestone metadata. **The frontend must work without it.**
+Caches chain events into Postgres, stores off-chain milestone metadata, and uploads receipts to IPFS. **The frontend must work without it.**
 
 ```bash
 pnpm install
-cp .env.example .env         # set CONTRACT_ADDRESS + CONTRACT_DEPLOY_BLOCK once deployed
+cp .env.example .env         # set DATABASE_URL (Postgres), CONTRACT_ADDRESS, CONTRACT_DEPLOY_BLOCK, PINATA_JWT
 pnpm prisma:generate
-pnpm prisma:push             # creates prisma/dev.db
-pnpm seed                    # optional fake data
+pnpm prisma:push             # applies the schema to the database
+# pnpm seed                  # fake data — only against a throwaway DB; it wipes tables
 pnpm dev                     # http://localhost:4000/api/health
 ```
 

@@ -10,10 +10,10 @@ out/
 cache/
 broadcast/
 # prisma sqlite
-backend/prisma/*.db
-backend/prisma/*.db-journal
 # misc
 .DS_Store
 *.log
 *.tsbuildinfo
 backend/uploads/
+backend/prisma/*.db
+backend/prisma/*.db-journal

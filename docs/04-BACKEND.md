@@ -16,7 +16,7 @@ The demo does **not** need it. It exists to:
 ## Stack
 
 - Node 20+, TypeScript, Express 4
-- Prisma ORM, **SQLite** by default (`file:./dev.db`) — switch `provider` to `postgresql` in `schema.prisma` if a Postgres URL is available. Zero infra for the hackathon.
+- Prisma ORM on **Postgres** (Prisma Postgres, `DATABASE_URL` in `.env`). Same DB for local dev and hosted backend, so the indexer's cursor and the receipt metadata are shared.
 - `viem` for the indexer (read-only, no private key needed)
 - `zod` for request validation
 - `cors`, `dotenv`
@@ -57,7 +57,7 @@ backend/
 | `MilestoneMetadata` | `(orgId, milestoneId)` | off-chain only: `receiptUrl?`, `notes?` |
 | `IndexerState` | `id = 1` | `lastBlock` cursor |
 
-Amounts are stored as **string** (wei) — SQLite has no 256-bit ints and JS `number` loses precision.
+Amounts are stored as **string** (wei) — JS `number` loses precision above 2^53 and Postgres `numeric` would need casting everywhere; strings + `BigInt` at the edges is simplest.
 
 ## REST endpoints
 
@@ -78,7 +78,7 @@ Amounts are stored as **string** (wei) — SQLite has no 256-bit ints and JS `nu
 | GET | `/api/receipts/storage` | `{ storage: "ipfs" \| "local" }` |
 | GET | `/api/receipts/:filename` | local-fallback file; name must be `0x<64 hex>.<ext>` |
 
-All responses: `{ data: ... }` or `{ error: string }`. Aggregation lives in `src/lib/aggregate.ts`.
+All responses: `{ data: ... }` or `{ error: string }`. Aggregation lives in `src/lib/aggregate.ts` (sums done in JS with `BigInt`).
 
 ## Indexer (`services/indexer.ts`)
 
@@ -100,7 +100,7 @@ Apurva provides the `getLogs` + ABI event definitions; Aditya writes the upsert 
 pnpm dev            # ts-node-dev with reload
 pnpm build          # tsc
 pnpm start          # node dist/index.js
-pnpm prisma:push    # prisma db push (creates dev.db)
+pnpm prisma:push    # prisma db push against DATABASE_URL
 pnpm prisma:studio  # browse the DB
 ```
 
@@ -109,7 +109,7 @@ pnpm prisma:studio  # browse the DB
 ```
 PORT=4000
 PUBLIC_URL=http://localhost:4000      # only used for local-fallback receipt URIs
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://…?sslmode=require"   # Prisma Postgres; never commit
 PINATA_JWT=                            # set → receipts pinned to IPFS, ipfs://<cid> on-chain
 IPFS_GATEWAY=https://gateway.pinata.cloud/ipfs
 IPFS_FALLBACK_LOCAL=true
