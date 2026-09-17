@@ -4,10 +4,10 @@
 //   jq '.abi' contracts/out/DonationTracker.sol/DonationTracker.json
 import type { Address } from 'viem';
 
-export const DONATION_TRACKER_ADDRESS: Address = '0x0000000000000000000000000000000000000000';
+export const DONATION_TRACKER_ADDRESS: Address = '0x6Dba6ab5d89E854045F05C736bA52FD0Bf0AAF4b';
 
 /** Block the contract was deployed at — used as `fromBlock` for getLogs. */
-export const DONATION_TRACKER_DEPLOY_BLOCK = 0n;
+export const DONATION_TRACKER_DEPLOY_BLOCK = 46945949n;
 
 export const DONATION_TRACKER_ABI = 
 [
