@@ -18,6 +18,7 @@ export interface ApiStats {
   totalReleased: string;
   balance: string;
   donorCount: number;
+  orgCount?: number;
   milestoneCount: number;
 }
 
@@ -34,6 +35,7 @@ export interface ApiMilestoneMetadata {
 export const api = {
   health: () => get<{ ok: boolean }>('/api/health'),
   stats: () => get<ApiStats>('/api/stats'),
-  topDonors: (limit = 10) => get<ApiTopDonor[]>(`/api/donors/top?limit=${limit}`),
-  milestoneMetadata: (id: number) => get<ApiMilestoneMetadata>(`/api/milestones/${id}/metadata`),
+  orgStats: (orgId: number) => get<ApiStats>(`/api/orgs/${orgId}/stats`),
+  topDonors: (orgId: number, limit = 10) => get<ApiTopDonor[]>(`/api/orgs/${orgId}/donors/top?limit=${limit}`),
+  milestoneMetadata: (orgId: number, id: number) => get<ApiMilestoneMetadata>(`/api/orgs/${orgId}/milestones/${id}/metadata`),
 };

@@ -85,3 +85,21 @@ tr:last-child td { border-bottom: none; }
 .footer { color: var(--muted); font-size: 0.8rem; text-align: center; padding: 32px 0 16px; }
 .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .muted { color: var(--muted); }
+
+/* --- multi-org --- */
+.brand { color: var(--text); }
+.brand:hover { text-decoration: none; }
+.org-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.org-card { display: block; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; color: var(--text); transition: border-color 0.15s; }
+.org-card:hover { border-color: var(--primary); text-decoration: none; }
+.org-card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.org-card h3 { margin: 0; font-size: 1.05rem; }
+.org-desc { color: var(--muted); font-size: 0.88rem; margin: 8px 0 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.org-meta { display: flex; gap: 16px; flex-wrap: wrap; font-size: 0.85rem; }
+.org-meta .label { display: block; color: var(--muted); font-size: 0.75rem; }
+.org-foot { font-size: 0.78rem; margin-top: 10px; }
+.org-header h1 { margin: 0 0 4px; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.org-header p { margin: 4px 0; }
+.org-header { margin-bottom: 16px; }
+textarea.input { resize: vertical; font-family: var(--font); }
+a.btn:hover { text-decoration: none; }

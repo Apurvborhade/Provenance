@@ -1,15 +1,15 @@
 // Owner: Apurva
-// After deploying, replace DONATION_TRACKER_ADDRESS and DONATION_TRACKER_DEPLOY_BLOCK.
-// ABI below is generated from `forge build` — regenerate with:
-//   jq '.abi' contracts/out/DonationTracker.sol/DonationTracker.json
+// After deploying, replace DONATION_PLATFORM_ADDRESS and DONATION_PLATFORM_DEPLOY_BLOCK.
+// ABI is generated from `forge build` — regenerate with:
+//   jq '.abi' contracts/out/DonationPlatform.sol/DonationPlatform.json
 import type { Address } from 'viem';
 
-export const DONATION_TRACKER_ADDRESS: Address = '0x6Dba6ab5d89E854045F05C736bA52FD0Bf0AAF4b';
+export const DONATION_PLATFORM_ADDRESS: Address = '0x0000000000000000000000000000000000000000';
 
 /** Block the contract was deployed at — used as `fromBlock` for getLogs. */
-export const DONATION_TRACKER_DEPLOY_BLOCK = 46945949n;
+export const DONATION_PLATFORM_DEPLOY_BLOCK = 0n;
 
-export const DONATION_TRACKER_ABI = 
+export const DONATION_PLATFORM_ABI = 
 [
   {
     "type": "constructor",
@@ -25,6 +25,11 @@ export const DONATION_TRACKER_ABI =
     "name": "addMilestone",
     "inputs": [
       {
+        "name": "orgId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
         "name": "description",
         "type": "string",
         "internalType": "string"
@@ -37,7 +42,7 @@ export const DONATION_TRACKER_ABI =
     ],
     "outputs": [
       {
-        "name": "id",
+        "name": "milestoneId",
         "type": "uint256",
         "internalType": "uint256"
       }
@@ -46,10 +51,28 @@ export const DONATION_TRACKER_ABI =
   },
   {
     "type": "function",
+    "name": "admin",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "approveMilestone",
     "inputs": [
       {
-        "name": "id",
+        "name": "orgId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "milestoneId",
         "type": "uint256",
         "internalType": "uint256"
       }
@@ -59,8 +82,43 @@ export const DONATION_TRACKER_ABI =
   },
   {
     "type": "function",
+    "name": "createOrg",
+    "inputs": [
+      {
+        "name": "name",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "description",
+        "type": "string",
+        "internalType": "string"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "orgId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
     "name": "donate",
-    "inputs": [],
+    "inputs": [
+      {
+        "name": "orgId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "message",
+        "type": "string",
+        "internalType": "string"
+      }
+    ],
     "outputs": [],
     "stateMutability": "payable"
   },
@@ -69,7 +127,12 @@ export const DONATION_TRACKER_ABI =
     "name": "donations",
     "inputs": [
       {
-        "name": "",
+        "name": "orgId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "donor",
         "type": "address",
         "internalType": "address"
       }
@@ -101,7 +164,12 @@ export const DONATION_TRACKER_ABI =
     "name": "getMilestone",
     "inputs": [
       {
-        "name": "id",
+        "name": "orgId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "milestoneId",
         "type": "uint256",
         "internalType": "uint256"
       }
@@ -110,7 +178,7 @@ export const DONATION_TRACKER_ABI =
       {
         "name": "",
         "type": "tuple",
-        "internalType": "struct DonationTracker.Milestone",
+        "internalType": "struct DonationPlatform.Milestone",
         "components": [
           {
             "name": "description",
@@ -150,7 +218,13 @@ export const DONATION_TRACKER_ABI =
   {
     "type": "function",
     "name": "getMilestoneCount",
-    "inputs": [],
+    "inputs": [
+      {
+        "name": "orgId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
     "outputs": [
       {
         "name": "",
@@ -163,12 +237,18 @@ export const DONATION_TRACKER_ABI =
   {
     "type": "function",
     "name": "getMilestones",
-    "inputs": [],
+    "inputs": [
+      {
+        "name": "orgId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
     "outputs": [
       {
         "name": "",
         "type": "tuple[]",
-        "internalType": "struct DonationTracker.Milestone[]",
+        "internalType": "struct DonationPlatform.Milestone[]",
         "components": [
           {
             "name": "description",
@@ -207,13 +287,129 @@ export const DONATION_TRACKER_ABI =
   },
   {
     "type": "function",
-    "name": "owner",
+    "name": "getOrg",
+    "inputs": [
+      {
+        "name": "orgId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "internalType": "struct DonationPlatform.Org",
+        "components": [
+          {
+            "name": "owner",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "internalType": "string"
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "internalType": "string"
+          },
+          {
+            "name": "totalDonated",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "totalReleased",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "balance",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "donorCount",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "createdAt",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getOrgCount",
     "inputs": [],
     "outputs": [
       {
         "name": "",
-        "type": "address",
-        "internalType": "address"
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getOrgs",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple[]",
+        "internalType": "struct DonationPlatform.Org[]",
+        "components": [
+          {
+            "name": "owner",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "internalType": "string"
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "internalType": "string"
+          },
+          {
+            "name": "totalDonated",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "totalReleased",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "balance",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "donorCount",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "createdAt",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
       }
     ],
     "stateMutability": "view"
@@ -223,7 +419,12 @@ export const DONATION_TRACKER_ABI =
     "name": "releaseMilestone",
     "inputs": [
       {
-        "name": "id",
+        "name": "orgId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "milestoneId",
         "type": "uint256",
         "internalType": "uint256"
       }
@@ -258,9 +459,38 @@ export const DONATION_TRACKER_ABI =
     "stateMutability": "view"
   },
   {
+    "type": "function",
+    "name": "updateOrg",
+    "inputs": [
+      {
+        "name": "orgId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "description",
+        "type": "string",
+        "internalType": "string"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
     "type": "event",
     "name": "Donated",
     "inputs": [
+      {
+        "name": "orgId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
       {
         "name": "donor",
         "type": "address",
@@ -272,6 +502,12 @@ export const DONATION_TRACKER_ABI =
         "type": "uint256",
         "indexed": false,
         "internalType": "uint256"
+      },
+      {
+        "name": "message",
+        "type": "string",
+        "indexed": false,
+        "internalType": "string"
       },
       {
         "name": "timestamp",
@@ -287,7 +523,13 @@ export const DONATION_TRACKER_ABI =
     "name": "MilestoneApproved",
     "inputs": [
       {
-        "name": "id",
+        "name": "orgId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "milestoneId",
         "type": "uint256",
         "indexed": true,
         "internalType": "uint256"
@@ -300,7 +542,13 @@ export const DONATION_TRACKER_ABI =
     "name": "MilestoneReleased",
     "inputs": [
       {
-        "name": "id",
+        "name": "orgId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "milestoneId",
         "type": "uint256",
         "indexed": true,
         "internalType": "uint256"
@@ -325,7 +573,13 @@ export const DONATION_TRACKER_ABI =
     "name": "MilestoneRequested",
     "inputs": [
       {
-        "name": "id",
+        "name": "orgId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "milestoneId",
         "type": "uint256",
         "indexed": true,
         "internalType": "uint256"
@@ -346,6 +600,62 @@ export const DONATION_TRACKER_ABI =
     "anonymous": false
   },
   {
+    "type": "event",
+    "name": "OrgCreated",
+    "inputs": [
+      {
+        "name": "orgId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "owner",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "indexed": false,
+        "internalType": "string"
+      },
+      {
+        "name": "description",
+        "type": "string",
+        "indexed": false,
+        "internalType": "string"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "OrgUpdated",
+    "inputs": [
+      {
+        "name": "orgId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "indexed": false,
+        "internalType": "string"
+      },
+      {
+        "name": "description",
+        "type": "string",
+        "indexed": false,
+        "internalType": "string"
+      }
+    ],
+    "anonymous": false
+  },
+  {
     "type": "error",
     "name": "AlreadyApproved",
     "inputs": []
@@ -357,7 +667,17 @@ export const DONATION_TRACKER_ABI =
   },
   {
     "type": "error",
+    "name": "DirectTransferNotAllowed",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "EmptyDescription",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "EmptyName",
     "inputs": []
   },
   {
@@ -372,12 +692,22 @@ export const DONATION_TRACKER_ABI =
   },
   {
     "type": "error",
+    "name": "InvalidOrg",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotAdmin",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "NotApproved",
     "inputs": []
   },
   {
     "type": "error",
-    "name": "NotOwner",
+    "name": "NotOrgOwner",
     "inputs": []
   },
   {

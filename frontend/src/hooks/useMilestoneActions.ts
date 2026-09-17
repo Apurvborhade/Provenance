@@ -1,34 +1,29 @@
-// Owner: Apurva — add / approve / release writes (owner only on-chain).
+// Owner: Apurva — add (org owner) / approve (admin) / release (org owner) writes.
 import { parseEther } from 'viem';
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
-import { DONATION_TRACKER_ABI, DONATION_TRACKER_ADDRESS } from '../config/contract';
-import { TARGET_CHAIN } from '../config/wagmi';
+import { platformContract } from './contract';
 import type { TxState } from '../lib/types';
 
-const base = {
-  address: DONATION_TRACKER_ADDRESS,
-  abi: DONATION_TRACKER_ABI,
-  chainId: TARGET_CHAIN.id,
-} as const;
-
-export function useMilestoneActions() {
+export function useMilestoneActions(orgId: number) {
   const { writeContract, data: hash, isPending, error, reset, variables } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
+  const oid = BigInt(orgId);
 
   const addMilestone = (description: string, amountEth: string) =>
-    writeContract({ ...base, functionName: 'addMilestone', args: [description, parseEther(amountEth)] });
+    writeContract({ ...platformContract, functionName: 'addMilestone', args: [oid, description, parseEther(amountEth)] });
 
   const approveMilestone = (id: number) =>
-    writeContract({ ...base, functionName: 'approveMilestone', args: [BigInt(id)] });
+    writeContract({ ...platformContract, functionName: 'approveMilestone', args: [oid, BigInt(id)] });
 
   const releaseMilestone = (id: number) =>
-    writeContract({ ...base, functionName: 'releaseMilestone', args: [BigInt(id)] });
+    writeContract({ ...platformContract, functionName: 'releaseMilestone', args: [oid, BigInt(id)] });
 
   const tx: TxState = { hash, isPending, isConfirming, isSuccess, error };
 
   /** Which function the in-flight tx is for, so buttons can show per-row spinners. */
   const activeFn = variables?.functionName as 'addMilestone' | 'approveMilestone' | 'releaseMilestone' | undefined;
-  const activeId = activeFn && activeFn !== 'addMilestone' ? Number((variables?.args as [bigint])[0]) : undefined;
+  const activeId =
+    activeFn && activeFn !== 'addMilestone' ? Number((variables?.args as readonly [bigint, bigint])[1]) : undefined;
 
   return { addMilestone, approveMilestone, releaseMilestone, tx, reset, activeFn, activeId };
 }

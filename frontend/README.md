@@ -20,4 +20,4 @@ pnpm build
 
 ## Mock mode
 
-`src/pages/*` currently import from `useDonationTracker` etc. Set `VITE_USE_MOCK=true` in `.env` to render everything from `src/lib/mock.ts` without a wallet or RPC — useful while building UI.
+`src/pages/*` currently import from `useDonationPlatform` etc. Set `VITE_USE_MOCK=true` in `.env` to render everything from `src/lib/mock.ts` without a wallet or RPC — useful while building UI.

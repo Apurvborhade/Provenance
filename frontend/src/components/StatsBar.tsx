@@ -1,14 +1,13 @@
 // Owner: Aditya — pure props, no wagmi.
 import { formatEth } from '../lib/format';
-import type { Stats } from '../lib/types';
 
-export function StatsBar({ stats }: { stats: Stats }) {
-  const tiles = [
-    { label: 'Total donated', value: formatEth(stats.totalDonated), unit: 'ETH' },
-    { label: 'Current balance', value: formatEth(stats.balance), unit: 'ETH' },
-    { label: 'Total released', value: formatEth(stats.totalReleased), unit: 'ETH' },
-    { label: 'Milestones', value: String(stats.milestoneCount), unit: '' },
-  ];
+export interface StatTile {
+  label: string;
+  value: string;
+  unit?: string;
+}
+
+export function StatsBar({ tiles }: { tiles: StatTile[] }) {
   return (
     <div className="stats">
       {tiles.map((t) => (
@@ -23,3 +22,6 @@ export function StatsBar({ stats }: { stats: Stats }) {
     </div>
   );
 }
+
+export const ethTile = (label: string, wei: bigint): StatTile => ({ label, value: formatEth(wei), unit: 'ETH' });
+export const numTile = (label: string, n: number): StatTile => ({ label, value: String(n) });

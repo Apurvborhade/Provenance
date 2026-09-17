@@ -1,44 +1,28 @@
-// Owner: Aditya — shell + tabs. ConnectButton is Apurva's.
-import { useState } from 'react';
+// Owner: Aditya — shell + routing. ConnectButton is Apurva's.
 import { ConnectButton } from './components/ConnectButton';
-import { DashboardPage } from './pages/DashboardPage';
-import { DonatePage } from './pages/DonatePage';
+import { HomePage } from './pages/HomePage';
 import { OrgPage } from './pages/OrgPage';
+import { CreateOrgPage } from './pages/CreateOrgPage';
+import { useRoute, href } from './lib/router';
 import { USE_MOCK } from './lib/mock';
 
-type Tab = 'dashboard' | 'donate' | 'org';
-
-const TABS: { id: Tab; label: string }[] = [
-  { id: 'dashboard', label: 'Dashboard' },
-  { id: 'donate', label: 'Donate' },
-  { id: 'org', label: 'Org' },
-];
-
 export default function App() {
-  const [tab, setTab] = useState<Tab>('dashboard');
+  const route = useRoute();
 
   return (
     <div className="container">
       <header className="header">
-        <div className="brand">Prove<span>nance</span></div>
+        <a className="brand" href={href.home()}>Prove<span>nance</span></a>
         <div className="right">
           {USE_MOCK && <span className="pill warn"><span className="dot" />mock data</span>}
           <ConnectButton />
         </div>
       </header>
 
-      <nav className="tabs">
-        {TABS.map((t) => (
-          <button key={t.id} className={`tab ${tab === t.id ? 'active' : ''}`} onClick={() => setTab(t.id)}>
-            {t.label}
-          </button>
-        ))}
-      </nav>
-
       <main>
-        {tab === 'dashboard' && <DashboardPage />}
-        {tab === 'donate' && <DonatePage />}
-        {tab === 'org' && <OrgPage />}
+        {route.page === 'home' && <HomePage />}
+        {route.page === 'create' && <CreateOrgPage />}
+        {route.page === 'org' && <OrgPage key={route.orgId} orgId={route.orgId} />}
       </main>
 
       <footer className="footer">All data read live from Base Sepolia · nothing is self-reported · Hack2Ignite WB-05</footer>

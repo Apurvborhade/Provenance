@@ -1,4 +1,4 @@
-// Owner: Aditya — pure props. `renderActions` lets OrgPanel inject Approve/Release buttons.
+// Owner: Aditya — pure props. `renderActions` lets ManagePanel inject Approve/Release buttons.
 import type { ReactNode } from 'react';
 import { Badge } from './ui';
 import { formatEth, formatDate } from '../lib/format';

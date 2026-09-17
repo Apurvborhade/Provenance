@@ -1,22 +1,20 @@
-// Owner: Apurva — donate(value) write.
+// Owner: Apurva — donate(orgId, message) write.
 import { parseEther } from 'viem';
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
-import { DONATION_TRACKER_ABI, DONATION_TRACKER_ADDRESS } from '../config/contract';
-import { TARGET_CHAIN } from '../config/wagmi';
+import { platformContract } from './contract';
 import type { TxState } from '../lib/types';
 
-export function useDonate() {
+export function useDonate(orgId: number) {
   const { writeContract, data: hash, isPending, error, reset } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
 
   /** @param amountEth e.g. "0.01" */
-  const donate = (amountEth: string) =>
+  const donate = (amountEth: string, message = '') =>
     writeContract({
-      address: DONATION_TRACKER_ADDRESS,
-      abi: DONATION_TRACKER_ABI,
+      ...platformContract,
       functionName: 'donate',
+      args: [BigInt(orgId), message],
       value: parseEther(amountEth),
-      chainId: TARGET_CHAIN.id,
     });
 
   const tx: TxState = { hash, isPending, isConfirming, isSuccess, error };
