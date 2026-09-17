@@ -2,6 +2,20 @@
 
 Multi-organisation on-chain donation + milestone-based fund release tracker. Any NGO registers an org; donors give ETH with a message; the org requests a spend milestone naming a vendor, the platform admin approves, funds go straight to the vendor, and the org must attach a receipt hash before it can ask for more. Every donation, milestone request, approval and release is an on-chain event on **Base Sepolia**, and the dashboard reads directly from the contract so nothing shown is "claimed" — it's all verifiable on Basescan.
 
+## Screenshots
+
+**Landing** — live receipt of the latest on-chain events, plus platform-wide totals.
+
+![Landing page](docs/screenshots/landing.png)
+
+**Organisations** — directory of every registered org with raised / escrow / paid-out figures, and a platform-wide activity feed rebuilt from contract logs.
+
+![Organisations directory](docs/screenshots/organisations.png)
+
+**Org detail** — every spend request with status, payee and IPFS receipt; an org with a released milestone and no proof is blocked from requesting more.
+
+![Organisation detail](docs/screenshots/org-detail.png)
+
 ## Repo layout
 
 ```
