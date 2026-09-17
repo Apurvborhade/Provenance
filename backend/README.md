@@ -34,4 +34,6 @@ curl -s -X PUT localhost:4000/api/milestones/0/metadata -H 'content-type: applic
 | GET | `/api/orgs/:orgId/milestones/:id/metadata` |
 | PUT | `/api/orgs/:orgId/milestones/:id/metadata` |
 
-Indexer: `src/services/indexer.ts` polls `getLogs` every `INDEXER_POLL_MS` from `CONTRACT_DEPLOY_BLOCK`, upserting orgs, donations and milestones. It stays idle until `CONTRACT_ADDRESS` is set.
+Stats include `releasedCount`, `proofCount`, `proofRate` (0–100 or null) for the org reputation line.
+
+Indexer: `src/services/indexer.ts` polls `getLogs` every `INDEXER_POLL_MS` from `CONTRACT_DEPLOY_BLOCK`, upserting orgs, donations, milestones and proofs. It stays idle until `CONTRACT_ADDRESS` is set.

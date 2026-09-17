@@ -51,9 +51,14 @@ model Milestone {
   status        String   @default("pending") // pending | approved | released
   createdAt     Int                     // unix seconds (block timestamp)
   releasedAt    Int?
+  payee         String                  // receives funds on release
   requestTxHash String
   approveTxHash String?
   releaseTxHash String?
+  proofHash     String?                 // keccak256 hex, set by ProofAttached
+  proofUri      String?
+  proofAt       Int?
+  proofTxHash   String?
   updatedAt     DateTime @updatedAt
 
   org      Org                @relation(fields: [orgId], references: [id], onDelete: Cascade)

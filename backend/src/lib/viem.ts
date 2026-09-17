@@ -13,9 +13,10 @@ export const PLATFORM_EVENTS_ABI = parseAbi([
   'event OrgCreated(uint256 indexed orgId, address indexed owner, string name, string description)',
   'event OrgUpdated(uint256 indexed orgId, string name, string description)',
   'event Donated(uint256 indexed orgId, address indexed donor, uint256 amount, string message, uint256 timestamp)',
-  'event MilestoneRequested(uint256 indexed orgId, uint256 indexed milestoneId, string description, uint256 amount)',
+  'event MilestoneRequested(uint256 indexed orgId, uint256 indexed milestoneId, string description, uint256 amount, address payee)',
   'event MilestoneApproved(uint256 indexed orgId, uint256 indexed milestoneId)',
-  'event MilestoneReleased(uint256 indexed orgId, uint256 indexed milestoneId, uint256 amount, uint256 timestamp)',
+  'event MilestoneReleased(uint256 indexed orgId, uint256 indexed milestoneId, uint256 amount, address payee, uint256 timestamp)',
+  'event ProofAttached(uint256 indexed orgId, uint256 indexed milestoneId, bytes32 proofHash, string proofUri, uint256 timestamp)',
 ]);
 
 export const PLATFORM_READ_ABI = parseAbi([

@@ -7,13 +7,15 @@ export async function statsFor(orgId?: number) {
   const where = orgId === undefined ? {} : { orgId };
   const [donations, released, donors, milestoneCount, orgCount] = await Promise.all([
     prisma.donation.findMany({ where, select: { amount: true } }),
-    prisma.milestone.findMany({ where: { ...where, status: 'released' }, select: { amount: true } }),
+    prisma.milestone.findMany({ where: { ...where, status: 'released' }, select: { amount: true, proofAt: true } }),
     prisma.donation.groupBy({ by: ['donor'], where }),
     prisma.milestone.count({ where }),
     orgId === undefined ? prisma.org.count() : Promise.resolve(1),
   ]);
   const totalDonated = sumWei(donations);
   const totalReleased = sumWei(released);
+  const releasedCount = released.length;
+  const proofCount = released.filter((r) => r.proofAt !== null).length;
   return {
     totalDonated: totalDonated.toString(),
     totalReleased: totalReleased.toString(),
@@ -21,6 +23,10 @@ export async function statsFor(orgId?: number) {
     donorCount: donors.length,
     milestoneCount,
     orgCount,
+    releasedCount,
+    proofCount,
+    /** 0–100, null if nothing released yet */
+    proofRate: releasedCount === 0 ? null : Math.round((proofCount / releasedCount) * 100),
   };
 }
 

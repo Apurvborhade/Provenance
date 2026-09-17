@@ -7,6 +7,7 @@ const now = Math.floor(Date.now() / 1000);
 const h = (n: number) => `0x${n.toString(16).padStart(64, '0')}`;
 const OWNER_A = '0x9999000000000000000000000000000000009999';
 const OWNER_B = '0x7777000000000000000000000000000000007777';
+const VENDOR = '0x5e11000000000000000000000000000000005e11';
 
 async function main() {
   await prisma.milestoneMetadata.deleteMany();
@@ -32,10 +33,10 @@ async function main() {
 
   await prisma.milestone.createMany({
     data: [
-      { orgId: 0, id: 0, description: 'Purchased 50 textbooks for Grade 5', amount: parseEther('0.02').toString(), status: 'released', createdAt: now - 86400 * 3, releasedAt: now - 86400 * 2, requestTxHash: h(10), approveTxHash: h(11), releaseTxHash: h(12) },
-      { orgId: 0, id: 1, description: 'School lunch program — week 1', amount: parseEther('0.015').toString(), status: 'approved', createdAt: now - 86400, requestTxHash: h(20), approveTxHash: h(21) },
-      { orgId: 0, id: 2, description: 'Repair classroom roof', amount: parseEther('0.05').toString(), status: 'pending', createdAt: now - 3600, requestTxHash: h(30) },
-      { orgId: 1, id: 0, description: 'Borewell drilling contractor deposit', amount: parseEther('0.1').toString(), status: 'pending', createdAt: now - 7200, requestTxHash: h(40) },
+      { orgId: 0, id: 0, description: 'Purchased 50 textbooks for Grade 5', amount: parseEther('0.02').toString(), payee: VENDOR, status: 'released', createdAt: now - 86400 * 3, releasedAt: now - 86400 * 2, requestTxHash: h(10), approveTxHash: h(11), releaseTxHash: h(12), proofHash: h(999), proofUri: 'https://example.com/receipts/textbooks.pdf', proofAt: now - 86400, proofTxHash: h(13) },
+      { orgId: 0, id: 1, description: 'School lunch program — week 1', amount: parseEther('0.015').toString(), payee: VENDOR, status: 'approved', createdAt: now - 86400, requestTxHash: h(20), approveTxHash: h(21) },
+      { orgId: 0, id: 2, description: 'Repair classroom roof', amount: parseEther('0.05').toString(), payee: OWNER_A, status: 'pending', createdAt: now - 3600, requestTxHash: h(30) },
+      { orgId: 1, id: 0, description: 'Borewell drilling contractor deposit', amount: parseEther('0.1').toString(), payee: VENDOR, status: 'pending', createdAt: now - 7200, requestTxHash: h(40) },
     ],
   });
 

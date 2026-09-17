@@ -90,6 +90,7 @@ async function indexRange(fromBlock: bigint, toBlock: bigint) {
             id,
             description: log.args.description!,
             amount: log.args.amount!.toString(),
+            payee: log.args.payee!,
             status: 'pending',
             createdAt: await tsFor(log.blockNumber),
             requestTxHash: txHash,
@@ -110,6 +111,18 @@ async function indexRange(fromBlock: bigint, toBlock: bigint) {
         await prisma.milestone.updateMany({
           where: { orgId, id: Number(log.args.milestoneId) },
           data: { status: 'released', releaseTxHash: txHash, releasedAt: Number(log.args.timestamp) },
+        });
+        break;
+
+      case 'ProofAttached':
+        await prisma.milestone.updateMany({
+          where: { orgId, id: Number(log.args.milestoneId) },
+          data: {
+            proofHash: log.args.proofHash!,
+            proofUri: log.args.proofUri!,
+            proofAt: Number(log.args.timestamp),
+            proofTxHash: txHash,
+          },
         });
         break;
     }
