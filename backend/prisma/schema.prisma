@@ -1,0 +1,55 @@
+// Owner: Aditya. Spec: docs/04-BACKEND.md
+// SQLite for zero-infra hackathon. To use Postgres: provider = "postgresql", DATABASE_URL=postgres://...
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+/// One row per Donated event. Amounts are wei as strings (no 256-bit ints in SQLite / JS number).
+model Donation {
+  txHash      String   @id
+  logIndex    Int
+  donor       String
+  amount      String
+  blockNumber Int
+  timestamp   Int
+  createdAt   DateTime @default(now())
+
+  @@index([donor])
+  @@index([blockNumber])
+}
+
+/// Mirrors on-chain milestone + the tx hash for each lifecycle step.
+model Milestone {
+  id            Int      @id            // on-chain milestone id
+  description   String
+  amount        String                  // wei
+  status        String   @default("pending") // pending | approved | released
+  createdAt     Int                     // unix seconds (from block timestamp)
+  releasedAt    Int?
+  requestTxHash String
+  approveTxHash String?
+  releaseTxHash String?
+  updatedAt     DateTime @updatedAt
+
+  metadata MilestoneMetadata?
+}
+
+/// Off-chain only: receipt links / notes attached by the org.
+model MilestoneMetadata {
+  milestoneId Int       @id
+  receiptUrl  String?
+  notes       String?
+  updatedAt   DateTime  @updatedAt
+  milestone   Milestone @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
+}
+
+/// Single-row cursor so the indexer resumes where it left off.
+model IndexerState {
+  id        Int @id @default(1)
+  lastBlock Int
+}
