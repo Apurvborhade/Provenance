@@ -4,10 +4,10 @@
 //   jq '.abi' contracts/out/DonationPlatform.sol/DonationPlatform.json
 import type { Address } from 'viem';
 
-export const DONATION_PLATFORM_ADDRESS: Address = '0x0000000000000000000000000000000000000000';
+export const DONATION_PLATFORM_ADDRESS: Address = '0x29df57C50BD4A3d4CCa3be83Bc376BDDf7353192';
 
 /** Block the contract was deployed at — used as `fromBlock` for getLogs. */
-export const DONATION_PLATFORM_DEPLOY_BLOCK = 0n;
+export const DONATION_PLATFORM_DEPLOY_BLOCK = 46955584n;
 
 export const DONATION_PLATFORM_ABI = 
 [
