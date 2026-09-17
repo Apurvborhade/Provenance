@@ -10,10 +10,14 @@ import type { Milestone, Org } from '../lib/types';
 type RawMilestone = {
   description: string;
   amount: bigint;
+  payee: `0x${string}`;
   approved: boolean;
   released: boolean;
   createdAt: bigint;
   releasedAt: bigint;
+  proofHash: `0x${string}`;
+  proofUri: string;
+  proofAt: bigint;
 };
 
 function toMilestone(raw: RawMilestone, orgId: number, id: number): Milestone {
@@ -22,9 +26,11 @@ function toMilestone(raw: RawMilestone, orgId: number, id: number): Milestone {
     orgId,
     description: raw.description,
     amount: raw.amount,
+    payee: raw.payee,
     status: raw.released ? 'released' : raw.approved ? 'approved' : 'pending',
     createdAt: Number(raw.createdAt),
     releasedAt: raw.releasedAt === 0n ? null : Number(raw.releasedAt),
+    proof: raw.proofAt === 0n ? null : { hash: raw.proofHash, uri: raw.proofUri, at: Number(raw.proofAt) },
   };
 }
 
@@ -48,6 +54,8 @@ export function useOrg(orgId: number) {
   }, [milestonesRaw.data, orgId]);
 
   const isOrgOwner = !!connected && !!org && connected.toLowerCase() === org.owner.toLowerCase();
+  /** Released milestones still awaiting proof — blocks new requests on-chain. */
+  const unproofed = milestones.filter((m) => m.status === 'released' && !m.proof);
 
   return {
     org,
@@ -55,6 +63,7 @@ export function useOrg(orgId: number) {
     isOrgOwner,
     isAdmin,
     admin,
+    unproofed,
     isLoading: !USE_MOCK && (orgRaw.isLoading || milestonesRaw.isLoading),
     notFound: !USE_MOCK && !!orgRaw.error && /InvalidOrg/.test(orgRaw.error.message),
     error: orgRaw.error ?? milestonesRaw.error ?? null,

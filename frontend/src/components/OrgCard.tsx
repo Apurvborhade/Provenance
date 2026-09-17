@@ -15,6 +15,12 @@ export function OrgCard({ org }: { org: Org }) {
         <div><span className="label">Raised</span><strong>{formatEth(org.totalDonated)} ETH</strong></div>
         <div><span className="label">In escrow</span><strong>{formatEth(org.balance)} ETH</strong></div>
         <div><span className="label">Donors</span><strong>{org.donorCount}</strong></div>
+        <div>
+          <span className="label">Proofed</span>
+          <strong className={org.releasedCount > 0 && org.proofCount < org.releasedCount ? 'warn-text' : ''}>
+            {org.releasedCount === 0 ? '—' : `${org.proofCount}/${org.releasedCount}`}
+          </strong>
+        </div>
       </div>
       <div className="org-foot muted">
         by <span className="mono">{shortAddr(org.owner)}</span> · {timeAgo(org.createdAt)}

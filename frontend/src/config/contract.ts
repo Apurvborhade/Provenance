@@ -9,8 +9,7 @@ export const DONATION_PLATFORM_ADDRESS: Address = '0x29df57C50BD4A3d4CCa3be83Bc3
 /** Block the contract was deployed at — used as `fromBlock` for getLogs. */
 export const DONATION_PLATFORM_DEPLOY_BLOCK = 46955584n;
 
-export const DONATION_PLATFORM_ABI = 
-[
+export const DONATION_PLATFORM_ABI = [
   {
     "type": "constructor",
     "inputs": [],
@@ -38,6 +37,11 @@ export const DONATION_PLATFORM_ABI =
         "name": "amount",
         "type": "uint256",
         "internalType": "uint256"
+      },
+      {
+        "name": "payee",
+        "type": "address",
+        "internalType": "address"
       }
     ],
     "outputs": [
@@ -75,6 +79,34 @@ export const DONATION_PLATFORM_ABI =
         "name": "milestoneId",
         "type": "uint256",
         "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "attachProof",
+    "inputs": [
+      {
+        "name": "orgId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "milestoneId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "proofHash",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "proofUri",
+        "type": "string",
+        "internalType": "string"
       }
     ],
     "outputs": [],
@@ -191,6 +223,11 @@ export const DONATION_PLATFORM_ABI =
             "internalType": "uint256"
           },
           {
+            "name": "payee",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
             "name": "approved",
             "type": "bool",
             "internalType": "bool"
@@ -207,6 +244,21 @@ export const DONATION_PLATFORM_ABI =
           },
           {
             "name": "releasedAt",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "proofHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "proofUri",
+            "type": "string",
+            "internalType": "string"
+          },
+          {
+            "name": "proofAt",
             "type": "uint256",
             "internalType": "uint256"
           }
@@ -261,6 +313,11 @@ export const DONATION_PLATFORM_ABI =
             "internalType": "uint256"
           },
           {
+            "name": "payee",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
             "name": "approved",
             "type": "bool",
             "internalType": "bool"
@@ -277,6 +334,21 @@ export const DONATION_PLATFORM_ABI =
           },
           {
             "name": "releasedAt",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "proofHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "proofUri",
+            "type": "string",
+            "internalType": "string"
+          },
+          {
+            "name": "proofAt",
             "type": "uint256",
             "internalType": "uint256"
           }
@@ -338,6 +410,16 @@ export const DONATION_PLATFORM_ABI =
           },
           {
             "name": "createdAt",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "releasedCount",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "proofCount",
             "type": "uint256",
             "internalType": "uint256"
           }
@@ -406,6 +488,16 @@ export const DONATION_PLATFORM_ABI =
           },
           {
             "name": "createdAt",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "releasedCount",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "proofCount",
             "type": "uint256",
             "internalType": "uint256"
           }
@@ -560,6 +652,12 @@ export const DONATION_PLATFORM_ABI =
         "internalType": "uint256"
       },
       {
+        "name": "payee",
+        "type": "address",
+        "indexed": false,
+        "internalType": "address"
+      },
+      {
         "name": "timestamp",
         "type": "uint256",
         "indexed": false,
@@ -595,6 +693,12 @@ export const DONATION_PLATFORM_ABI =
         "type": "uint256",
         "indexed": false,
         "internalType": "uint256"
+      },
+      {
+        "name": "payee",
+        "type": "address",
+        "indexed": false,
+        "internalType": "address"
       }
     ],
     "anonymous": false
@@ -656,6 +760,43 @@ export const DONATION_PLATFORM_ABI =
     "anonymous": false
   },
   {
+    "type": "event",
+    "name": "ProofAttached",
+    "inputs": [
+      {
+        "name": "orgId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "milestoneId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "proofHash",
+        "type": "bytes32",
+        "indexed": false,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "proofUri",
+        "type": "string",
+        "indexed": false,
+        "internalType": "string"
+      },
+      {
+        "name": "timestamp",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
     "type": "error",
     "name": "AlreadyApproved",
     "inputs": []
@@ -678,6 +819,11 @@ export const DONATION_PLATFORM_ABI =
   {
     "type": "error",
     "name": "EmptyName",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "EmptyProof",
     "inputs": []
   },
   {
@@ -712,12 +858,38 @@ export const DONATION_PLATFORM_ABI =
   },
   {
     "type": "error",
+    "name": "NotReleased",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ProofAlreadyAttached",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ProofRequired",
+    "inputs": [
+      {
+        "name": "milestoneId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
     "name": "TransferFailed",
     "inputs": []
   },
   {
     "type": "error",
     "name": "ZeroAmount",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ZeroPayee",
     "inputs": []
   }
 ] as const;

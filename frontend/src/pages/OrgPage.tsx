@@ -15,7 +15,7 @@ type Tab = 'overview' | 'donate' | 'manage';
 
 export function OrgPage({ orgId }: { orgId: number }) {
   const [tab, setTab] = useState<Tab>('overview');
-  const { org, milestones, isOrgOwner, isAdmin, admin, isLoading, notFound, error } = useOrg(orgId);
+  const { org, milestones, unproofed, isOrgOwner, isAdmin, admin, isLoading, notFound, error } = useOrg(orgId);
   const history = useTxHistory(orgId);
 
   if (notFound) return <Banner kind="error">Organisation #{orgId} does not exist. <a href={href.home()}>Back to all orgs</a></Banner>;
@@ -42,8 +42,11 @@ export function OrgPage({ orgId }: { orgId: number }) {
       </div>
 
       {error && <Banner kind="error">{error.message.split('\n')[0]}</Banner>}
+      {unproofed.length > 0 && !isOrgOwner && (
+        <Banner kind="warn">This org has {unproofed.length} released milestone{unproofed.length > 1 ? 's' : ''} without proof-of-spend yet. It cannot request more funds until proof is attached.</Banner>
+      )}
 
-      <StatsBar tiles={[ethTile('Raised', org.totalDonated), ethTile('In escrow', org.balance), ethTile('Released', org.totalReleased), numTile('Donors', org.donorCount), numTile('Milestones', milestones.length)]} />
+      <StatsBar tiles={[ethTile('Raised', org.totalDonated), ethTile('In escrow', org.balance), ethTile('Released', org.totalReleased), numTile('Donors', org.donorCount), { label: 'Proofed releases', value: org.releasedCount === 0 ? '—' : `${org.proofCount}/${org.releasedCount}` }]} />
 
       <nav className="tabs">
         {tabs.map((t) => (
@@ -62,7 +65,7 @@ export function OrgPage({ orgId }: { orgId: number }) {
         </>
       )}
       {tab === 'donate' && <DonateForm org={org} />}
-      {tab === 'manage' && <ManagePanel org={org} milestones={milestones} isOrgOwner={isOrgOwner} isAdmin={isAdmin} admin={admin} />}
+      {tab === 'manage' && <ManagePanel org={org} milestones={milestones} unproofed={unproofed} isOrgOwner={isOrgOwner} isAdmin={isAdmin} admin={admin} />}
     </>
   );
 }

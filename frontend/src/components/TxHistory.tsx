@@ -9,6 +9,7 @@ const LABEL: Record<HistoryItem['kind'], string> = {
   requested: 'Milestone requested',
   approved: 'Milestone approved',
   released: 'Funds released',
+  proofAttached: 'Proof attached',
 };
 
 function describe(h: HistoryItem) {
@@ -24,11 +25,13 @@ function describe(h: HistoryItem) {
         </>
       );
     case 'requested':
-      return <>#{h.milestoneId} “{h.description}” — {formatEth(h.amount!)} ETH</>;
+      return <>#{h.milestoneId} “{h.description}” — {formatEth(h.amount!)} ETH to <a href={addrUrl(h.payee!)} target="_blank" rel="noreferrer" className="mono">{shortAddr(h.payee!)}</a></>;
     case 'approved':
       return <>Milestone #{h.milestoneId} approved by admin</>;
     case 'released':
-      return <>Milestone #{h.milestoneId} — <strong>{formatEth(h.amount!)} ETH</strong> to org wallet</>;
+      return <>Milestone #{h.milestoneId} — <strong>{formatEth(h.amount!)} ETH</strong> paid to <a href={addrUrl(h.payee!)} target="_blank" rel="noreferrer" className="mono">{shortAddr(h.payee!)}</a></>;
+    case 'proofAttached':
+      return <>Milestone #{h.milestoneId} — <a href={h.proofUri} target="_blank" rel="noreferrer">receipt ↗</a> hashed on-chain</>;
   }
 }
 

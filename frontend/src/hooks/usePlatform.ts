@@ -15,6 +15,8 @@ type RawOrg = {
   balance: bigint;
   donorCount: bigint;
   createdAt: bigint;
+  releasedCount: bigint;
+  proofCount: bigint;
 };
 
 export function toOrg(raw: RawOrg, id: number): Org {
@@ -28,6 +30,8 @@ export function toOrg(raw: RawOrg, id: number): Org {
     balance: raw.balance,
     donorCount: Number(raw.donorCount),
     createdAt: Number(raw.createdAt),
+    releasedCount: Number(raw.releasedCount),
+    proofCount: Number(raw.proofCount),
   };
 }
 
@@ -55,6 +59,7 @@ export function usePlatform() {
   useWatchContractEvent({ ...watch, eventName: 'MilestoneRequested' });
   useWatchContractEvent({ ...watch, eventName: 'MilestoneApproved' });
   useWatchContractEvent({ ...watch, eventName: 'MilestoneReleased' });
+  useWatchContractEvent({ ...watch, eventName: 'ProofAttached' });
 
   const orgs: Org[] = useMemo(() => {
     if (USE_MOCK) return mockOrgs;

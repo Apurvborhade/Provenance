@@ -15,6 +15,10 @@ export interface Org {
   donorCount: number;
   /** unix seconds */
   createdAt: number;
+  /** milestones released */
+  releasedCount: number;
+  /** released milestones with proof attached */
+  proofCount: number;
 }
 
 export type MilestoneStatus = 'pending' | 'approved' | 'released';
@@ -25,14 +29,18 @@ export interface Milestone {
   description: string;
   /** wei */
   amount: bigint;
+  /** receives the funds on release */
+  payee: Address;
   status: MilestoneStatus;
   /** unix seconds */
   createdAt: number;
   /** unix seconds, null until released */
   releasedAt: number | null;
+  /** proof-of-spend; null until attached */
+  proof: { hash: Hex; uri: string; at: number } | null;
 }
 
-export type HistoryKind = 'orgCreated' | 'donated' | 'requested' | 'approved' | 'released';
+export type HistoryKind = 'orgCreated' | 'donated' | 'requested' | 'approved' | 'released' | 'proofAttached';
 
 export interface HistoryItem {
   kind: HistoryKind;
@@ -50,6 +58,10 @@ export interface HistoryItem {
   message?: string;
   /** org name for OrgCreated */
   name?: string;
+  /** payee for requested/released */
+  payee?: Address;
+  /** proof uri for proofAttached */
+  proofUri?: string;
 }
 
 export interface PlatformStats {

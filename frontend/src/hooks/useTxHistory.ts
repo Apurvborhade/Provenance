@@ -59,6 +59,7 @@ export function useTxHistory(orgId?: number) {
                 milestoneId: Number(log.args.milestoneId),
                 description: log.args.description,
                 amount: log.args.amount,
+                payee: log.args.payee,
               });
               break;
             case 'MilestoneApproved':
@@ -70,6 +71,16 @@ export function useTxHistory(orgId?: number) {
                 kind: 'released',
                 milestoneId: Number(log.args.milestoneId),
                 amount: log.args.amount,
+                payee: log.args.payee,
+                timestamp: Number(log.args.timestamp),
+              });
+              break;
+            case 'ProofAttached':
+              items.push({
+                ...common,
+                kind: 'proofAttached',
+                milestoneId: Number(log.args.milestoneId),
+                proofUri: log.args.proofUri,
                 timestamp: Number(log.args.timestamp),
               });
               break;

@@ -103,3 +103,10 @@ tr:last-child td { border-bottom: none; }
 .org-header { margin-bottom: 16px; }
 textarea.input { resize: vertical; font-family: var(--font); }
 a.btn:hover { text-decoration: none; }
+
+/* --- proof of spend --- */
+.proof.ok { color: var(--green); font-size: 0.85rem; }
+.proof.missing { color: var(--amber); font-size: 0.8rem; }
+.warn-text { color: var(--amber); }
+.proof-form .sub { color: var(--muted); font-size: 0.85rem; margin: 0 0 12px; }
+input[type="file"].input { padding: 7px; }
