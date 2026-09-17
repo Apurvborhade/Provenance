@@ -1,0 +1,10 @@
+{
+  "name": "provenance",
+  "private": true,
+  "scripts": {
+    "fe": "pnpm --dir frontend dev",
+    "be": "pnpm --dir backend dev",
+    "test:contracts": "cd contracts && forge test",
+    "typecheck": "pnpm --dir frontend typecheck && pnpm --dir backend typecheck"
+  }
+}
