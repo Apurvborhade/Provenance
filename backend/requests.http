@@ -1,0 +1,23 @@
+### Health
+GET http://localhost:4000/api/health
+
+### Stats
+GET http://localhost:4000/api/stats
+
+### Donations
+GET http://localhost:4000/api/donations?limit=10
+
+### Top donors
+GET http://localhost:4000/api/donors/top?limit=5
+
+### Milestones
+GET http://localhost:4000/api/milestones
+
+### Milestone metadata
+GET http://localhost:4000/api/milestones/0/metadata
+
+### Upsert metadata
+PUT http://localhost:4000/api/milestones/0/metadata
+Content-Type: application/json
+
+{ "receiptUrl": "https://example.com/receipt.pdf", "notes": "Invoice #123" }
