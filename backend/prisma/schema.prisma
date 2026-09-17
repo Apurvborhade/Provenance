@@ -23,7 +23,7 @@ model Org {
   milestones Milestone[]
 }
 
-/// One row per Donated event. Amounts are wei as strings (no 256-bit ints in SQLite / JS number).
+/// One row per Donated event. Amounts are wei as strings (JS number loses precision above 2^53).
 model Donation {
   txHash      String   @id
   logIndex    Int
