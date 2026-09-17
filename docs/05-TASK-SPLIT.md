@@ -55,7 +55,8 @@ The interface between the two lanes is **plain TypeScript props/types** (`fronte
 ### B1. Frontend UI kit (frontend/src/components/ui/)
 - [ ] `Button` — variants primary/secondary/danger, `loading` prop shows spinner, `disabled`
 - [ ] `Card`, `Badge` (pending=amber, approved=blue, released=green), `Input`, `Spinner`, `Table`, `Toast`
-- [ ] `index.css` — CSS variables (colours, spacing), dark-ish clean theme, responsive at 400px
+- [x] `index.css` — design system (ink/leaf tokens, Bricolage/Instrument/Plex Mono), landing, receipt, rail
+- [ ] Responsive QA at 400px on the landing hero + rail (stacks vertically) and org page header
 - [ ] No wagmi imports anywhere in `ui/`
 
 ### B2. Frontend data components (props in, JSX out)

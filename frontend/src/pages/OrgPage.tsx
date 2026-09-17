@@ -18,27 +18,25 @@ export function OrgPage({ orgId }: { orgId: number }) {
   const { org, milestones, unproofed, isOrgOwner, isAdmin, admin, isLoading, notFound, error } = useOrg(orgId);
   const history = useTxHistory(orgId);
 
-  if (notFound) return <Banner kind="error">Organisation #{orgId} does not exist. <a href={href.home()}>Back to all orgs</a></Banner>;
+  if (notFound) return <Banner kind="error">Organisation #{orgId} does not exist. <a href={href.orgs()}>Back to all orgs</a></Banner>;
   if (isLoading || !org) return <div className="empty"><Spinner /> Loading organisation…</div>;
 
   const canManage = isOrgOwner || isAdmin;
   const tabs: { id: Tab; label: string }[] = [
-    { id: 'overview', label: 'Overview' },
+    { id: 'overview', label: 'Ledger' },
     { id: 'donate', label: 'Donate' },
     { id: 'manage', label: canManage ? 'Manage' : 'Manage 🔒' },
   ];
 
   return (
     <>
-      <p><a href={href.home()}>← All organisations</a></p>
+      <a className="back" href={href.orgs()}>← Organisations</a>
       <div className="org-header">
-        <div>
-          <h1>{org.name} <span className="pill mono">#{org.id}</span></h1>
-          <p className="muted">{org.description}</p>
-          <p className="muted" style={{ fontSize: '0.85rem' }}>
-            Owner <a href={addrUrl(org.owner)} target="_blank" rel="noreferrer" className="mono">{shortAddr(org.owner)}</a> · created {formatDate(org.createdAt)}
-          </p>
-        </div>
+        <h1>{org.name} <span className="org-id">#{org.id}</span></h1>
+        {org.description && <p className="desc">{org.description}</p>}
+        <p className="meta">
+          Owner <a href={addrUrl(org.owner)} target="_blank" rel="noreferrer" className="mono">{shortAddr(org.owner)}</a> · registered {formatDate(org.createdAt)}
+        </p>
       </div>
 
       {error && <Banner kind="error">{error.message.split('\n')[0]}</Banner>}
@@ -46,7 +44,7 @@ export function OrgPage({ orgId }: { orgId: number }) {
         <Banner kind="warn">This org has {unproofed.length} released milestone{unproofed.length > 1 ? 's' : ''} without proof-of-spend yet. It cannot request more funds until proof is attached.</Banner>
       )}
 
-      <StatsBar tiles={[ethTile('Raised', org.totalDonated), ethTile('In escrow', org.balance), ethTile('Released', org.totalReleased), numTile('Donors', org.donorCount), { label: 'Proofed releases', value: org.releasedCount === 0 ? '—' : `${org.proofCount}/${org.releasedCount}` }]} />
+      <StatsBar tiles={[ethTile('Raised', org.totalDonated), ethTile('In escrow', org.balance), ethTile('Paid to vendors', org.totalReleased), numTile('Donors', org.donorCount), { label: 'Receipts', value: org.releasedCount === 0 ? '—' : `${org.proofCount}/${org.releasedCount}` }]} />
 
       <nav className="tabs">
         {tabs.map((t) => (
@@ -56,10 +54,10 @@ export function OrgPage({ orgId }: { orgId: number }) {
 
       {tab === 'overview' && (
         <>
-          <Card title="Milestones" subtitle="Every spend request and its current status.">
+          <Card title="Spend requests" subtitle="Every milestone this org has asked for, with status, payee and receipt.">
             <MilestoneTable milestones={milestones} />
           </Card>
-          <Card title="On-chain history" subtitle="Click any tx to verify on Basescan.">
+          <Card title="On-chain history" subtitle="Reconstructed from contract events. Click any tx to verify on Basescan.">
             {history.isLoading ? <div className="empty"><Spinner /> Fetching logs…</div> : <TxHistory items={history.data ?? []} />}
           </Card>
         </>

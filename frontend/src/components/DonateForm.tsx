@@ -17,15 +17,19 @@ export function DonateForm({ org }: { org: Org }) {
   const valid = Number(amount) > 0;
 
   return (
-    <Card title={`Donate to ${org.name}`} subtitle="Recorded on-chain against your address. Your message is public and permanent.">
+    <Card title={`Donate to ${org.name}`} subtitle="Goes into escrow for this org. Recorded on-chain against your address.">
       {!isConnected && <Banner kind="warn">Connect a wallet to donate.</Banner>}
       {isWrongNetwork && <Banner kind="warn">Switch to Base Sepolia to donate.</Banner>}
-      <Input label="Amount (ETH)" type="number" min="0" step="0.001" value={amount} onChange={(e) => setAmount(e.target.value)} disabled={busy} />
-      <Input label="Message (optional)" placeholder="For the kids 💙" maxLength={140} value={message} onChange={(e) => setMessage(e.target.value)} disabled={busy} />
-      <Button onClick={() => donate(amount, message.trim())} loading={busy} disabled={!isConnected || isWrongNetwork || !valid}>
-        {tx.isPending ? 'Confirm in wallet…' : tx.isConfirming ? 'Confirming…' : `Donate ${amount || '0'} ETH`}
-      </Button>
-      <div style={{ marginTop: 12 }}><TxStatus tx={tx} /></div>
+      <div className="form">
+        <Input label="Amount (ETH)" className="mono" type="number" min="0" step="0.001" value={amount} onChange={(e) => setAmount(e.target.value)} disabled={busy} />
+        <Input label="Message (optional)" placeholder="For the kids" maxLength={140} hint="Written on-chain with your donation. Public, permanent." value={message} onChange={(e) => setMessage(e.target.value)} disabled={busy} />
+        <div>
+          <Button size="lg" onClick={() => donate(amount, message.trim())} loading={busy} disabled={!isConnected || isWrongNetwork || !valid}>
+            {tx.isPending ? 'Confirm in wallet…' : tx.isConfirming ? 'Confirming…' : `Donate ${amount || '0'} ETH`}
+          </Button>
+        </div>
+      </div>
+      <div className="tx-status"><TxStatus tx={tx} /></div>
     </Card>
   );
 }

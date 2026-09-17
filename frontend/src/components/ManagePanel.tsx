@@ -63,9 +63,9 @@ export function ManagePanel({ org, milestones, unproofed, isOrgOwner, isAdmin, a
 
   return (
     <>
-      <div className="row" style={{ marginBottom: 12 }}>
-        {isOrgOwner && <span className="pill"><span className="dot" />You own this org</span>}
-        {isAdmin && <span className="pill"><span className="dot" />You are the platform admin</span>}
+      <div className="role-row">
+        {isOrgOwner && <span className="pill role"><span className="dot" />You own this org</span>}
+        {isAdmin && <span className="pill role"><span className="dot" />You are the platform admin</span>}
       </div>
 
       {isOrgOwner && blocked && (
@@ -77,14 +77,24 @@ export function ManagePanel({ org, milestones, unproofed, isOrgOwner, isAdmin, a
 
       {isOrgOwner && (
         <Card title="Request a release" subtitle="Say what the money is for and who gets paid. Funds go directly to the payee — never through your wallet. The admin must approve first.">
-          <Input label="Description" placeholder="Purchased 50 textbooks" maxLength={200} value={desc} onChange={(e) => setDesc(e.target.value)} disabled={busy || blocked} />
-          <Input label="Amount (ETH)" type="number" min="0" step="0.001" value={amount} onChange={(e) => setAmount(e.target.value)} disabled={busy || blocked} />
-          <Input label="Payee address (vendor / contractor)" className="mono" placeholder="0x…" value={payee} onChange={(e) => setPayee(e.target.value)} disabled={busy || blocked} />
-          {!payeeValid && payee && <p className="muted" style={{ marginTop: -6, fontSize: '0.8rem' }}>Not a valid address.</p>}
-          {payee.toLowerCase() === org.owner.toLowerCase() && <p className="muted" style={{ marginTop: -6, fontSize: '0.8rem' }}>Payee is your own wallet — name the vendor directly for a stronger audit trail.</p>}
-          <Button loading={busy && activeFn === 'addMilestone'} disabled={busy || blocked || !desc.trim() || Number(amount) <= 0 || !payeeValid} onClick={() => addMilestone(desc.trim(), amount, payee as `0x${string}`)}>
-            Add milestone
-          </Button>
+          <div className="form">
+            <Input label="What is it for?" placeholder="Purchased 50 textbooks for Grade 5" maxLength={200} value={desc} onChange={(e) => setDesc(e.target.value)} disabled={busy || blocked} />
+            <Input label="Amount (ETH)" className="mono" type="number" min="0" step="0.001" value={amount} onChange={(e) => setAmount(e.target.value)} disabled={busy || blocked} />
+            <Input
+              label="Payee — who gets paid"
+              className="mono"
+              placeholder="0x…"
+              value={payee}
+              onChange={(e) => setPayee(e.target.value)}
+              disabled={busy || blocked}
+              hint={!payeeValid && payee ? 'Not a valid address.' : payee.toLowerCase() === org.owner.toLowerCase() ? 'This is your own wallet. Naming the vendor directly makes the audit trail stronger.' : 'Funds are sent here on release, never to the org wallet.'}
+            />
+            <div>
+              <Button loading={busy && activeFn === 'addMilestone'} disabled={busy || blocked || !desc.trim() || Number(amount) <= 0 || !payeeValid} onClick={() => addMilestone(desc.trim(), amount, payee as `0x${string}`)}>
+                Submit request
+              </Button>
+            </div>
+          </div>
         </Card>
       )}
 
@@ -101,7 +111,7 @@ export function ManagePanel({ org, milestones, unproofed, isOrgOwner, isAdmin, a
 
       <Card title="Milestones" subtitle={isAdmin ? 'Approve pending requests — you are approving the purpose, the amount and the payee.' : 'Release approved milestones to their payee, then attach a receipt.'}>
         <MilestoneTable milestones={milestones} renderActions={actions} />
-        <div style={{ marginTop: 12 }}><TxStatus tx={tx} /></div>
+        <div className="tx-status"><TxStatus tx={tx} /></div>
       </Card>
     </>
   );

@@ -21,7 +21,8 @@ Rule: **components under `components/ui/` and the table/stats components must ne
 
 | Hash | Page | Shows |
 |---|---|---|
-| `#/` | `HomePage` | Platform stats, org directory (cards), platform-wide activity |
+| `#/` | `LandingPage` | Hero (thesis + live receipt printed from chain events), stat strip, "how money moves" rail, principles, 3 featured orgs |
+| `#/orgs` | `OrgsPage` | Org directory (cards with raised/escrow/paid progress), platform-wide activity |
 | `#/create` | `CreateOrgPage` | Create-org form; redirects to the new org on success |
 | `#/org/:id` | `OrgPage` | Org header + stats, tabs: **Overview** (milestones, history) · **Donate** · **Manage** (role-aware) |
 
@@ -51,13 +52,17 @@ frontend/src/
 ├── components/
 │   ├── ui/                     # Button, Card, Badge, Input, Banner, Spinner, TxStatus
 │   ├── ConnectButton.tsx
-│   ├── OrgCard.tsx, OrgList.tsx
+│   ├── OrgCard.tsx, OrgList.tsx, LiveReceipt.tsx
 │   ├── StatsBar.tsx            # takes StatTile[]; helpers ethTile() / numTile()
 │   ├── MilestoneTable.tsx, TxHistory.tsx
 │   ├── CreateOrgForm.tsx, DonateForm.tsx, ManagePanel.tsx, AttachProofForm.tsx
 └── pages/
-    ├── HomePage.tsx, CreateOrgPage.tsx, OrgPage.tsx
+    ├── LandingPage.tsx, OrgsPage.tsx, CreateOrgPage.tsx, OrgPage.tsx
 ```
+
+## Design system (`src/index.css`)
+
+Dark-first, single theme. Tokens: `--ink` ground, `--bark` surface, `--moss` raised, `--rule` borders, `--paper` text, `--sage` muted, `--leaf` the one accent; `--amber` / `--rust` / `--sky` are semantic (pending / danger / admin), not accent. Type: **Bricolage Grotesque** display, **Instrument Sans** body, **IBM Plex Mono** for anything numeric (hashes, amounts, addresses — always `tabular-nums`). Fonts load from Google Fonts in `index.html`. Motifs: the receipt (hero), ruled ledger tables, the 5-station rail.
 
 ## Key types (`src/lib/types.ts`)
 

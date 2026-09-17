@@ -20,18 +20,23 @@ export function CreateOrgForm() {
   }, [createdOrgId]);
 
   return (
-    <Card title="Create an organisation" subtitle="Your connected wallet becomes the org owner — it's the only wallet that can request and release funds.">
+    <Card title="Register an organisation" subtitle="Your connected wallet becomes the owner — the only wallet that can request, release and attach receipts for this org.">
       {!isConnected && <Banner kind="warn">Connect a wallet to create an organisation.</Banner>}
       {isWrongNetwork && <Banner kind="warn">Switch to Base Sepolia first.</Banner>}
-      <Input label="Name" placeholder="Sunrise Primary School" maxLength={80} value={name} onChange={(e) => setName(e.target.value)} disabled={busy} />
-      <div className="field">
-        <label htmlFor="org-desc">Description</label>
-        <textarea id="org-desc" className="input" rows={3} maxLength={500} placeholder="What will donations fund?" value={description} onChange={(e) => setDescription(e.target.value)} disabled={busy} />
+      <div className="form">
+        <Input label="Name" placeholder="Sunrise Primary School" maxLength={80} value={name} onChange={(e) => setName(e.target.value)} disabled={busy} />
+        <div className="field">
+          <label htmlFor="org-desc">Description</label>
+          <textarea id="org-desc" className="input" rows={3} maxLength={500} placeholder="What will donations fund? Who benefits?" value={description} onChange={(e) => setDescription(e.target.value)} disabled={busy} />
+          <span className="hint">Shown on your org card. Can be edited later by the owner wallet.</span>
+        </div>
+        <div>
+          <Button size="lg" onClick={() => createOrg(name.trim(), description.trim())} loading={busy} disabled={!isConnected || isWrongNetwork || !name.trim()}>
+            {tx.isPending ? 'Confirm in wallet…' : tx.isConfirming ? 'Registering…' : 'Register organisation'}
+          </Button>
+        </div>
       </div>
-      <Button onClick={() => createOrg(name.trim(), description.trim())} loading={busy} disabled={!isConnected || isWrongNetwork || !name.trim()}>
-        {tx.isPending ? 'Confirm in wallet…' : tx.isConfirming ? 'Creating…' : 'Create organisation'}
-      </Button>
-      <div style={{ marginTop: 12 }}><TxStatus tx={tx} /></div>
+      <div className="tx-status"><TxStatus tx={tx} /></div>
     </Card>
   );
 }

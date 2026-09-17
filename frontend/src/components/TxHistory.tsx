@@ -8,7 +8,7 @@ const LABEL: Record<HistoryItem['kind'], string> = {
   donated: 'Donation',
   requested: 'Milestone requested',
   approved: 'Milestone approved',
-  released: 'Funds released',
+  released: 'Paid to vendor',
   proofAttached: 'Proof attached',
 };
 
